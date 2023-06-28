@@ -1,0 +1,4 @@
+./test/
+~./data/
+~./utils/
+*.env
