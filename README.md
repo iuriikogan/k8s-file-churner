@@ -10,10 +10,15 @@ Go bin which writes a number of files with random data to /data/ directory
 
 ## make clean
   delete the binary in /bin/${BINARY_NAME}
+# Deploy-k8s
+  ./deploy-k8s/deploy.sh
+  deploys x deployments with x replicas/pvcs in x namespaces with x storage class 
+
+  ./deploy-k8s/detroy.sh 
+  deletes all the namespaces beginning with test
+
 
 ## clean up local test file
-  to cleanup test files locally, run the following command
-
-./utils/deleteTestFiles.sh
- 
- to be removed after deleteFiles.go is written
+  
+  ./utils/deleteTestFiles.sh
+  cleans up test files from data/ dir from running the image locally
