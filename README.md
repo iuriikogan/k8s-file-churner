@@ -1,4 +1,4 @@
-# ./writeFiles
+# bin/createTestEnv
 Go bin which writes a number of files with random data to /data/ directory
 
 # Create from Makefile 
@@ -14,6 +14,6 @@ Go bin which writes a number of files with random data to /data/ directory
 ## clean up local test file
   to cleanup test files locally, run the following command
 
-./deleteTestFiles.sh
+./utils/deleteTestFiles.sh
  
  to be removed after deleteFiles.go is written
