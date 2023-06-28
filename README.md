@@ -1,7 +1,8 @@
 # bin/createTestEnv
 Go bin which writes a number of files with random data to /data/ directory
 
-# Create from Makefile 
+# Create bin from Makefile 
+
 ## make build 
   build binary and copies to /bin/${BINARY_NAME}
 
@@ -10,6 +11,12 @@ Go bin which writes a number of files with random data to /data/ directory
 
 ## make clean
   delete the binary in /bin/${BINARY_NAME}
+
+
+# Run container locally
+  podman build -t <repository:tag> .
+  podman run <repository:tag>
+  
 # Deploy-k8s
   ./deploy-k8s/deploy.sh
   deploys x deployments with x replicas/pvcs in x namespaces with x storage class 
