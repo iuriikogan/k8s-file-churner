@@ -11,9 +11,11 @@ COPY *.go ./
 
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/createTestEnv main.go
+RUN chown 1001:1001 /app/createTestEnv
+RUN chmod +x /app/createTestEnv
 RUN mkdir -p /data
 
 # Run
-CMD [ "sh", "-c", "app/createTestEnv" ]
+ENTRYPOINT [ "app/createTestEnv" ] 
 
 

@@ -12,4 +12,4 @@ export NUM_PVC_PER_NS=3 # string number of PVC per Namespace
 export STORAGE_CLASS="managed-premium" # string only RWO storage classes TODO add logic for RWX storage classes
 
 # Set the Churn params for the image
-CHURN_PERCENTAGE=20 # int percentage of files to churn
+export CHURN_PERCENTAGE=20 # int percentage of files to churn

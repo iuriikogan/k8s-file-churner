@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Set env variables from ./setEnvs.sh
-  echo "*************************************************"
-  echo "setting environment variables"
-  echo "*************************************************"
-./../setEnvs.sh
-
+  # echo "*************************************************"
+  # echo "setting environment variables"
+  # echo "*************************************************"
+  # ./setEnv.sh
+  # done
 # Loop to create namespaces and deployments
 for ((i=1; i<=NUM_NAMESPACES; i++))
 do
@@ -28,7 +28,7 @@ do
         - ReadWriteOnce
       resources:
         requests:
-          storage: ${PVC_SIZE}
+          storage: ${PVC_SIZE_GB}
       storageClassName: ${STORAGE_CLASS}
 EOF
 
