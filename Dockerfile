@@ -10,7 +10,7 @@ RUN go mod download
 COPY *.go ./
 
 # Build
-RddUN CGO_ENABLED=0 GOOS=linux go build -o createTestEnv main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o createTestEnv main.go
 RUN mkdir -p /app/data
 # Run
 ENTRYPOINT ["/app/createTestEnv"]
