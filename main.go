@@ -13,11 +13,14 @@ import (
 func main() {
 	runtime.GOMAXPROCS(10) // set the number of threads to run
 	start := time.Now()    // Start the timer
-
-	sizeOfFileGB := 0.5 // os.Getenv("SIZE_OF_PVC_GB") Size of the PVC in GB
-	// fileSizeInt := sizeOfFileGB // File size in GB
-
-	numberOfFiles := 20 // TODO  Calculate the number of files to create based on PVC Size and File Size ENV Variables
+	// config, err := utils.LoadConfig("./")
+	// if err != nil {
+	// 	log.Fatal("failed to load the config", err)
+	// }
+	// return
+	sizeOfFileGB := 1
+	sizeOfPVCGB := 30
+	numberOfFiles := (int(sizeOfPVCGB) / int(sizeOfFileGB)) // TODO  Calculate the number of files to create based on PVC Size and File Size ENV Variables
 
 	fileSizeBytes := sizeOfFileGB * 1024 * 1024 * 1023 // Convert file size from GB to bytes and convert to int
 
@@ -51,7 +54,7 @@ func main() {
 	<-make(chan struct{})
 }
 
-func createFile(fileSizeBytes float64, fileIndex int, done chan<- bool) {
+func createFile(fileSizeBytes int, fileIndex int, done chan<- bool) {
 	// Generate a file name
 	fileName := fmt.Sprintf("data/test_file%d.txt", fileIndex)
 	// TODO check the directory exists and create it if it doesn't
@@ -75,7 +78,7 @@ func createFile(fileSizeBytes float64, fileIndex int, done chan<- bool) {
 	done <- true
 }
 
-func writeRandomData(file *os.File, fileSizeBytes float64, err error) {
+func writeRandomData(file *os.File, fileSizeBytes int, err error) {
 	if err != nil {
 		log.Printf("Failed to write data to file %s\n, Error: %s", file.Name(), err)
 	}
@@ -83,7 +86,7 @@ func writeRandomData(file *os.File, fileSizeBytes float64, err error) {
 	file.Write(data)                         // write the buffer to the file
 }
 
-func churnFiles(churnPercentage float64, fileSizeBytes float64) {
+func churnFiles(churnPercentage float64, fileSizeBytes int) {
 	files, err := os.ReadDir("data/") // read the data dir and pull all files into files slice
 	if err != nil {
 		log.Printf("Failed to read directory: %s\n", err)

@@ -1,21 +1,10 @@
 #!/bin/bash
 
-# Set the number of namespaces to create
-
-NUM_NAMESPACES=3
-NAMESPACE_PREFIX="test"
-
-# Set the image name for the busybox container
-
-IMAGE_NAME="iuriikogan/dev:createtestenv"
-
-# Set the PVC size number of PVC (replicas of deployment)and storage class
-
-PVC_SIZE="30Gi"
-NUMBER_OF_FILES=30
-SIZE_OF_FILES="1GB"
-NUM_PVC_PER_NS=3
-STORAGE_CLASS="managed-premium"
+# Set env variables from ./setEnvs.sh
+  echo "*************************************************"
+  echo "setting environment variables"
+  echo "*************************************************"
+./../setEnvs.sh
 
 # Loop to create namespaces and deployments
 for ((i=1; i<=NUM_NAMESPACES; i++))
