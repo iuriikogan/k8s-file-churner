@@ -12,17 +12,16 @@ import (
 
 func main() {
 	runtime.GOMAXPROCS(10) // set the number of threads to run
-	start := time.Now()    // Start the timer
 	// config, err := utils.LoadConfig("./")
 	// if err != nil {
 	// 	log.Fatal("failed to load the config", err)
 	// }
 	// return
-	sizeOfFileGB := 1
-	sizeOfPVCGB := 30
-	numberOfFiles := (int(sizeOfPVCGB) / int(sizeOfFileGB)) // TODO  Calculate the number of files to create based on PVC Size and File Size ENV Variables
+	fileSizeGB := 1
+	PVCSizeGB := 30
+	numberOfFiles := (int(PVCSizeGB) / int(fileSizeGB)) // TODO  Calculate the number of files to create based on PVC Size and File Size ENV Variables
 
-	fileSizeBytes := sizeOfFileGB * 1024 * 1024 * 1023 // Convert file size from GB to bytes and convert to int
+	fileSizeBytes := fileSizeGB * 1024 * 1024 * 1023 // Convert file size from GB to bytes and convert to int
 
 	done := make(chan bool) // which sets done when a createfile routine is created and closes the channel when done is true
 
@@ -37,15 +36,16 @@ func main() {
 	}
 
 	churnInterval := 30 * time.Second // Churn interval
-	churnPercentage := 0.2            // Churn percentage
+	churnPercentage := 0.1            // Churn percentage
 	churnTicker := time.NewTicker(churnInterval)
 	go func() {
+		log.Printf("Starting to churn %v percent of files every %v", (churnPercentage * 100), churnInterval)
 		for {
 			select {
 			case <-churnTicker.C:
-				churnFiles(churnPercentage, fileSizeBytes)
-			case <-time.After(5 * time.Second):
-				log.Printf("Time to next churn: %s", churnInterval-(time.Since(start)%churnInterval))
+				churnFiles(churnPercentage, fileSizeBytes, done)
+			case <-time.After(10 * time.Second):
+				log.Println("waiting to churn files")
 			}
 		}
 	}()
@@ -74,7 +74,7 @@ func createFile(fileSizeBytes int, fileIndex int, done chan<- bool) {
 		done <- false
 		return
 	}
-	log.Printf("Created file '%s' of size %v", file.Name(), int(fileSizeBytes)) // TODO display filesize in MB
+	log.Printf("Created file '%s' of size %vGb", file.Name(), int(fileSizeBytes/1024/1024/1023)) // TODO display filesize in MB
 	done <- true
 }
 
@@ -86,31 +86,35 @@ func writeRandomData(file *os.File, fileSizeBytes int, err error) {
 	file.Write(data)                         // write the buffer to the file
 }
 
-func churnFiles(churnPercentage float64, fileSizeBytes int) {
+func churnFiles(churnPercentage float64, fileSizeBytes int, done chan<- bool) {
 	files, err := os.ReadDir("data/") // read the data dir and pull all files into files slice
 	if err != nil {
 		log.Printf("Failed to read directory: %s\n", err)
 		return
 	}
-	numFiles := len(files)
-	numFilesToDelete := int(float64(numFiles) * churnPercentage)
-	if numFilesToDelete == 0 {
+	numberOfFiles := len(files)
+	numberOfFilesToDelete := int(float64(numberOfFiles) * churnPercentage)
+	if numberOfFilesToDelete == 0 {
 		log.Println("No files to churn.")
 		return
 	}
+
 	// Delete the first numFilesToDelete files if they start with "test" and are not directories
-	for i := 0; i < numFilesToDelete; i++ {
+	for i := 0; i < numberOfFilesToDelete; i++ {
 		file := files[i]
-		if strings.HasPrefix(file.Name(), "test") && !file.IsDir() {
+		done := make(chan bool)
+		if strings.HasPrefix(file.Name(), "test") && !file.IsDir() { // TODO check why this is not working as expected
 			filePath := filepath.Join("data", file.Name())
 			err := os.Remove(filePath)
 			if err != nil {
 				log.Printf("Failed to delete file '%s': %s\n", filePath, err)
 				continue
 			}
-			// launch a new createFile routine to replace the deleted file
-			go createFile(fileSizeBytes, i, nil)
-			log.Printf("File created '%s'", filePath)
+			log.Printf("Deleted file '%s'\n", filePath)
+			go createFile(fileSizeBytes, i, done)
 		}
+		for i := 0; i < numberOfFiles; i++ {
+		}
+		<-done
 	}
 }
