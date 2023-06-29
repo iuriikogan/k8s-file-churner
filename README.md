@@ -1,4 +1,4 @@
-# bin/createTestEnv
+* bin/createTestEnv
 Go bin which writes a number of files with random data to /data/ directory
 
 # Create bin from Makefile 
