@@ -6,7 +6,7 @@
   deploys x deployments with x replicas/pvcs in x namespaces with x storage class 
 
   ./deploy-k8s/detroy.sh 
-  deletes all the namespaces beginning with test
+deletes all the namespaces beginning with $NAMESPACE_PREFIX
 
 # ./createTestEnv
 Go bin which writes a number of files with random data to /data/ directory

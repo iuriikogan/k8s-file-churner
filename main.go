@@ -18,7 +18,6 @@ func main() {
 	// 	log.Fatal("failed to load the config", err)
 	// }
 	// return
-
 	fileSizeGB := 1
 	PVCSizeGB := 30
 	numberOfFiles := (int(PVCSizeGB) / int(fileSizeGB))
@@ -29,12 +28,10 @@ func main() {
 	for i := 0; i < numberOfFiles; i++ {
 		go createFile(fileSizeBytes, i, done)
 	}
-
 	// Wait for all the goroutines to finish
 	for i := 0; i < numberOfFiles; i++ {
 		<-done // while done is true
 	}
-
 	churnInterval := 30 * time.Second // int Churn interval seconds load from config
 	churnPercentage := 0.1            // float64 Churn percentage
 	churnTicker := time.NewTicker(churnInterval)
@@ -58,7 +55,7 @@ func createFile(fileSizeBytes int, fileIndex int, done chan<- bool) {
 	// Generate a file name
 	fileName := fmt.Sprintf("data/test_file%d.txt", fileIndex)
 	// TODO check the directory exists and create it if it doesn't (currently done as part of the dockerfile)
-	file, err := os.Create(fileName) 	// Create the file
+	file, err := os.Create(fileName) // Create the file
 	if err != nil {
 		log.Printf("Failed to create file '%s': %s\n", fileName, err)
 		done <- false
@@ -77,7 +74,7 @@ func createFile(fileSizeBytes int, fileIndex int, done chan<- bool) {
 	done <- true
 }
 
-func writeRandomData(file *os.File, fileSizeBytes int, err error) {
+func writeRandomData(file *os.File, fileSizeBytes int, err error) { // TODO data needs to be random to avoid
 	if err != nil {
 		log.Printf("Failed to write data to file %s\n, Error: %s", file.Name(), err)
 	}
