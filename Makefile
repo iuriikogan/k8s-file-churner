@@ -16,5 +16,6 @@ clean:
 
 	rm -f ./bin/$(BINARY_NAME)
 	./utils/deleteTestFiles.sh
+	./deploy-k8s/destroy.sh
 
 	
