@@ -25,7 +25,7 @@ Go bin which writes a number of files with random data to /data/ directory
   make build and run the binary
 
 ## make clean
-  delete the binary in /bin/${BINARY_NAME}
+  delete the binary in /bin/${BINARY_NAME} and any local test files in /data dir
 
 # Run container locally
   podman build -t <repository:tag> .
