@@ -8,6 +8,10 @@ run: build
 	
 	./bin/$(BINARY_NAME)
 
+test: 
+
+	go test --verbose ./...
+
 clean:
 
 	rm -f ./bin/$(BINARY_NAME)

@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	runtime.GOMAXPROCS(10) // set the number of threads to run
+	runtime.GOMAXPROCS(4) // set the number of threads to run
 	// config, err := utils.LoadConfig("./")
 	// if err != nil {
 	// 	log.Fatal("failed to load the config", err)
@@ -39,7 +39,7 @@ func main() {
 	churnPercentage := 0.1            // Churn percentage
 	churnTicker := time.NewTicker(churnInterval)
 	go func() {
-		log.Printf("Starting to churn %v percent of files every %v", (churnPercentage * 100), churnInterval)
+		log.Printf("Churning %v percent of files every %v", (churnPercentage * 100), churnInterval)
 		for {
 			select {
 			case <-churnTicker.C:
