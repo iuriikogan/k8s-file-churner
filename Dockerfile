@@ -1,21 +1,15 @@
-FROM golang:1.19-alpine
-
-# Set destination for COPY
+# Build Stage
+FROM golang:1.19-alpine AS builder
 WORKDIR /app
-
-# Download Go modules
-COPY ./go.mod ./go.sum ./
-RUN go mod download
-
 COPY *.go ./
-
-# Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o ./createTestEnv main.go
-RUN chown 1001:1001 /app/createTestEnv
-RUN chmod +x /app/createTestEnv
-RUN mkdir -p /data
 
-# Run
-ENTRYPOINT [ "/app/createTestEnv" ] 
+# Run Stage
+FROM alpine:3.13
+WORKDIR /app
+COPY --from=builder /app/createTestEnv ./
+RUN mkdir -p /app/data
+
+CMD [ "/app/createTestEnv" ] 
 
 
