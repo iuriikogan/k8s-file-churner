@@ -1,12 +1,17 @@
 # to deploy to k8s 
 
+  git clone https://github.com/iuriikogan/createTestEnv-image.git
+
+  cd deploy-k8s
+
   vi setEnv.sh ## set the required env variables to tune your test environment
 
-  ./deploy-k8s/deploy.sh
+  ./deploy.sh
   deploys x deployments with x replicas/pvcs in x namespaces with x storage class 
 
-  ./deploy-k8s/detroy.sh 
-deletes all the namespaces beginning with $NAMESPACE_PREFIX
+  ./detroy.sh 
+  
+  deletes all the namespaces beginning with $NAMESPACE_PREFIX
 
 # ./createTestEnv
 Go bin which writes a number of files with random data to /data/ directory
