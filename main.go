@@ -12,18 +12,18 @@ import (
 
 func main() {
 	runtime.GOMAXPROCS(4) // set the number of threads to run
+	// TODO load config from ENV variables
 	// config, err := utils.LoadConfig("./")
 	// if err != nil {
 	// 	log.Fatal("failed to load the config", err)
 	// }
 	// return
+
 	fileSizeGB := 1
 	PVCSizeGB := 30
-	numberOfFiles := (int(PVCSizeGB) / int(fileSizeGB)) // TODO  Calculate the number of files to create based on PVC Size and File Size ENV Variables
-
-	fileSizeBytes := fileSizeGB * 1024 * 1024 * 1023 // Convert file size from GB to bytes and convert to int
-
-	done := make(chan bool) // which sets done when a createfile routine is created and closes the channel when done is true
+	numberOfFiles := (int(PVCSizeGB) / int(fileSizeGB))
+	fileSizeBytes := int(fileSizeGB * 1024 * 1024 * 1023) // Convert file size from GB to bytes and convert to int
+	done := make(chan bool)                               // which sets done when a createfile routine is created and closes the channel when done is true
 
 	// Launch a goroutine for each file creation
 	for i := 0; i < numberOfFiles; i++ {
@@ -35,8 +35,8 @@ func main() {
 		<-done // while done is true
 	}
 
-	churnInterval := 30 * time.Second // Churn interval
-	churnPercentage := 0.1            // Churn percentage
+	churnInterval := 30 * time.Second // int Churn interval seconds load from config
+	churnPercentage := 0.1            // float64 Churn percentage
 	churnTicker := time.NewTicker(churnInterval)
 	go func() {
 		log.Printf("Churning %v percent of files every %v", (churnPercentage * 100), churnInterval)
@@ -57,9 +57,8 @@ func main() {
 func createFile(fileSizeBytes int, fileIndex int, done chan<- bool) {
 	// Generate a file name
 	fileName := fmt.Sprintf("data/test_file%d.txt", fileIndex)
-	// TODO check the directory exists and create it if it doesn't
-	// Create the file
-	file, err := os.Create(fileName)
+	// TODO check the directory exists and create it if it doesn't (currently done as part of the dockerfile)
+	file, err := os.Create(fileName) 	// Create the file
 	if err != nil {
 		log.Printf("Failed to create file '%s': %s\n", fileName, err)
 		done <- false
