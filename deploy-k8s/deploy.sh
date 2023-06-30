@@ -1,11 +1,6 @@
-#!/bin/bash
-
-# Set env variables from ./setEnvs.sh
-  # echo "*************************************************"
-  # echo "setting environment variables"
-  # echo "*************************************************"
-  # ./setEnv.sh
-  # done
+echo 'Creating Namespaces and Deployments'
+. ./setenv.sh
+echo 'set environment variables, starting to create namespaces and deployments at' $start_time
 # Loop to create namespaces and deployments
 for ((i=1; i<=NUM_NAMESPACES; i++))
 do

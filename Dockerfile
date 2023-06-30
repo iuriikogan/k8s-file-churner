@@ -10,6 +10,6 @@ WORKDIR /app
 COPY --from=builder /app/createTestEnv ./
 RUN mkdir -p /app/data
 
-CMD [ "/app/createTestEnv" ] 
+ENTRYPOINT [ "/app/createTestEnv" ] 
 
 
