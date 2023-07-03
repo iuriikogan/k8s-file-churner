@@ -6,7 +6,7 @@ import (
 
 // T
 type Config struct {
-	sizeOfFileGB         int    `mapstructure:"SIZE_OF_FILE_GB"`        // Size of the file in GBi
+	sizeOfFileMB         int    `mapstructure:"SIZE_OF_FILE_MB"`        // Size of the file in GBi
 	sizeOfPVCGB          int    `mapstructure:"SIZE_OF_PVC_GB"`         // Number of files to create
 	storageClassName     string `mapstructure:"STORAGE_CLASS_NAME"`     // Storage class name
 	churnPercentage      int    `mapstructure:"CHURN_PERCENTAGE"`       // Percentage of files to churn
@@ -14,6 +14,8 @@ type Config struct {
 }
 
 func LoadConfig(path string) (config *Config, err error) {
+	viper.AddConfigPath(path)
+	viper.SetConfigName("config")
 	viper.AutomaticEnv()
 
 	err = viper.ReadInConfig()
