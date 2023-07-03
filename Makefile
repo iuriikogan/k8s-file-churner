@@ -1,12 +1,12 @@
-BINARY_NAME=k8s-file-churner
+BINARY_NAME=k8sFileChurner
 
 build: 
 
-	go build -o ./bin/$(BINARY_NAME) ./main.go
+	go build -o ./bin/$(BINARY_NAME) ./main.go 
 
 run: build
 	
-	./bin/$(BINARY_NAME)
+	./bin/$(BINARY_NAME) -mod=readonly
 
 test: 
 

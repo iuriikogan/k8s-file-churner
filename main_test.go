@@ -1,9 +1,7 @@
-package test
+package main
 
 import (
 	"fmt"
-	"github.com/iuriikogan/k8s-file-churner"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -13,7 +11,7 @@ import (
 
 func TestCreateFile(t *testing.T) {
 	fileSizeBytes := 1024
-	fileIndex := 0
+	fileIndex := 1
 	done := make(chan bool)
 
 	go createFile(fileSizeBytes, fileIndex, done)
@@ -38,15 +36,15 @@ func TestCreateFile(t *testing.T) {
 
 func TestChurnFiles(t *testing.T) {
 	// Create test files
-	err := ioutil.WriteFile("data/test_file1.txt", []byte("Test file 1"), 0644)
+	err := os.WriteFile("data/test_file1.txt", []byte("Test file 1"), 0644)
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = ioutil.WriteFile("data/test_file2.txt", []byte("Test file 2"), 0644)
+	err = os.WriteFile("data/test_file2.txt", []byte("Test file 2"), 0644)
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = ioutil.WriteFile("data/not_test_file.txt", []byte("Not a test file"), 0644)
+	err = os.WriteFile("data/not_test_file.txt", []byte("Not a test file"), 0644)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +58,7 @@ func TestChurnFiles(t *testing.T) {
 	select {
 	case <-done:
 		// Verify that files starting with "test" are churned
-		files, err := ioutil.ReadDir("data")
+		files, err := os.ReadDir("data")
 		if err != nil {
 			t.Fatalf("Failed to read directory: %s", err)
 		}

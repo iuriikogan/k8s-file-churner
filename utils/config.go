@@ -1,35 +1,38 @@
 package utils
 
 import (
+	"time"
+
 	"github.com/spf13/viper"
 )
 
 // Config
 type Config struct {
-	sizeOfFileMB        int    `mapstructure:"SIZE_OF_FILE_MB"`        // Size of the file in GB
-	sizeOfPVCGB         int    `mapstructure:"SIZE_OF_PVC_GB"`         // Number of files to create
-	storageClassName    string `mapstructure:"STORAGE_CLASS_NAME"`     // Storage class name
-	churnPercentage     int    `mapstructure:"CHURN_PERCENTAGE"`       // Percentage of files to churn
-	hurnIntervalMinutes int    `mapstructure:"CHURN_INTERVAL_MINUTES"` // Interval in minutes to churn files
+	SizeOfFileMB         int           `mapstructure:"APP_SIZE_OF_FILE_MB"`        // Size of the file in GB
+	SizeOfPVCGB          int           `mapstructure:"APP_SIZE_OF_PVC_GB"`         // Number of files to create
+	ChurnPercentage      float64       `mapstructure:"APP_CHURN_PERCENTAGE"`       // Percentage of files to churn must be passed as float64 (0.5 = 50%)
+	ChurnIntervalMinutes time.Duration `mapstructure:"APP_CHURN_INTERVAL_MINUTES"` // Churn interval in minutes
 }
 
-func LoadConfig(path string) (config *Config, err error) {
-	viper.AddConfigPath(path)
-	viper.SetConfigName("config")
-	viper.AutomaticEnv()
-
+func LoadConfig() (config *Config, err error) {
 	// Set default values
-	viper.SetDefault("SIZE_OF_FILE_MB", 1024)
-	viper.SetDefault("SIZE_OF_PVC_GB", 10)
-	viper.SetDefault("STORAGE_CLASS_NAME", "default")
-	viper.SetDefault("CHURN_PERCENTAGE", 50)
-	viper.SetDefault("CHURN_INTERVAL_MINUTES", 60)
+	viper.SetDefault("APP_SIZE_OF_FILE_MB", 999)
+	viper.SetDefault("APP_SIZE_OF_PVC_GB", 30)
+	viper.SetDefault("APP_CHURN_PERCENTAGE", 0.20)
+	viper.SetDefault("APP_CHURN_INTERVAL_MINUTES", 3600)
 
-	err = viper.ReadInConfig()
+	// read environment variables
+	viper.SetEnvPrefix("APP")
+	viper.BindEnv("APP_SIZE_OF_FILE_MB")
+	viper.BindEnv("APP_SIZE_OF_PVC_GB")
+	viper.BindEnv("APP_CHURN_PERCENTAGE")
+	viper.BindEnv("APP_CHURN_INTERVAL_MINUTES")
+
+	// Unmarshal the configuration into the Config struct
+	err = viper.Unmarshal(&config)
 	if err != nil {
-		return
+		return nil, err
 	}
 
-	err = viper.Unmarshal(&config)
-	return
+	return config, nil
 }

@@ -1,5 +1,5 @@
 echo 'Creating Namespaces and Deployments'
-. ./setenv.sh
+./setenv.sh
 # Loop to create namespaces and deployments
 for ((i=1; i<=NUM_NAMESPACES; i++))
 do
@@ -56,6 +56,7 @@ EOF
                 limits:  
                   memory: 1Gi
                   cpu: 1
+              command: ["sh", "-c"]
           volumes:
           - name: data
             persistentVolumeClaim:

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/iuriikogan/k8s-file-churner/utils"
 	"log"
 	"math/rand"
 	"os"
@@ -11,25 +10,30 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/iuriikogan/k8s-file-churner/utils"
 )
 
 func main() {
 	start := time.Now()
-	runtime.GOMAXPROCS(10) // set the number of threads to run
-	// TODO liveness probe / readiness probe for the pod
-	// TODO load config from ENV variables
-	config, err := utils.LoadConfig("./")
+	runtime.GOMAXPROCS(10)            // set the number of threads to run
+	config, err := utils.LoadConfig() // load the config from the current directory
 	if err != nil {
-		log.Fatal("failed to load the config", err)
+		log.Printf("Failed to load config: %v", err)
 	}
-	return
-	fmt.Printf("Size of each file in Mb: %d\n", config.sizeOfFileMB)
-	fmt.Printf("Size of PVC in Gb: %d\n", config.sizeOfPVCGB)
-	sizeOfPVCMB := config.sizeOfPVCGB * 1024
-	numberOfFiles := (config.sizeOfPVCMB) / (config.sizeOfFileMB - 1) // convert size of PVC to MB to calculate number of files to create
+
+	fmt.Printf("Size of each file in Mb: %d\n", config.SizeOfFileMB)
+
+	fmt.Printf("Size of PVC in Gb: %d\n", config.SizeOfPVCGB)
+
+	sizeOfPVCMB := config.SizeOfPVCGB * 1024
+
+	numberOfFiles := (sizeOfPVCMB) / (config.SizeOfFileMB) // convert size of PVC to MB to calculate number of files to create
+
 	fmt.Printf("Number of files to create: %d\n", numberOfFiles)
-	fileSizeBytes := int(sizeOfFileMB * 1024 * 1024) // Convert file size from MB to bytes and convert to int
-	fmt.Printf("Size of each file: %dMb\n", sizeOfFileMB)
+
+	fileSizeBytes := int(config.SizeOfFileMB * 1024 * 1024) // Convert file size from MB to bytes and convert to int
+	fmt.Printf("Size of each file: %dMb\n", config.SizeOfFileMB)
 	done := make(chan bool) // which sets done when a createfile routine is created and closes the channel when done is true
 
 	// Launch a goroutine for each file creation
@@ -40,16 +44,16 @@ func main() {
 	for i := 0; i < numberOfFiles; i++ {
 		<-done // while done is true
 	}
-	fmt.Printf("created %v files of size %vMb\n Took %s\n", numberOfFiles, sizeOfFileMB, time.Since(start))
-	// churnInterval := 30 * time.Second // int Churn interval seconds load from config
+	fmt.Printf("created %v files of size %vMb\n Took %s\n", numberOfFiles, config.SizeOfFileMB, time.Since(start))
+	churnInterval := config.ChurnIntervalMinutes * time.Minute // time.Duration Churn interval
 	// churnPercentage := 0.5            // float64 Churn percentage
-	churnTicker := time.NewTicker(config.churnIntervalMinutes)
+	churnTicker := time.NewTicker(churnInterval) //
 	go func() {
-		log.Printf("Churning %v percent of files every %v", (config.churnPercentage * 100), churnInterval)
+		log.Printf("Churning %v percent of files every %v", (config.ChurnPercentage * 100), config.ChurnIntervalMinutes)
 		for {
 			select {
 			case <-churnTicker.C:
-				churnFiles(churnPercentage, fileSizeBytes, done)
+				churnFiles(config.ChurnPercentage, fileSizeBytes, done)
 			case <-time.After(10 * time.Second):
 				log.Println("Waiting to churn files")
 			}
@@ -77,7 +81,6 @@ func createFile(fileSizeBytes int, fileIndex int, done chan<- bool) {
 		done <- false
 		panic(err)
 	}
-	log.Printf("Created file '%s' of size %vMb", file.Name(), int32(fileSizeBytes/1024/1024)) // TODO display filesize in GB
 	done <- true
 }
 
