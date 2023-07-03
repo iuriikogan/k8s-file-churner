@@ -2,13 +2,13 @@ package test
 
 import (
 	"fmt"
+	"github.com/iuriikogan/k8s-file-churner"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
-	 "github.com/iuriikogan/createTestEnv"
 )
 
 func TestCreateFile(t *testing.T) {

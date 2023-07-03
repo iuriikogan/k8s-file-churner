@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/iuriikogan/k8s-file-churner/utils"
 	"log"
 	"math/rand"
 	"os"
@@ -17,17 +18,15 @@ func main() {
 	runtime.GOMAXPROCS(10) // set the number of threads to run
 	// TODO liveness probe / readiness probe for the pod
 	// TODO load config from ENV variables
-	// config, err := utils.LoadConfig("./")
-	// if err != nil {
-	// 	log.Fatal("failed to load the config", err)
-	// }
-	// return
-	sizeOfFileMB := 100
-	fmt.Printf("Size of each file in Mb: %d\n", sizeOfFileMB)
-	sizeOfPVCGB := 5
-	fmt.Printf("Size of PVC in Gb: %d\n", sizeOfPVCGB)
-	sizeOfPVCMB := sizeOfPVCGB * 1024
-	numberOfFiles := (sizeOfPVCMB) / (sizeOfFileMB - 1) // convert size of PVC to MB to calculate number of files to create
+	config, err := utils.LoadConfig("./")
+	if err != nil {
+		log.Fatal("failed to load the config", err)
+	}
+	return
+	fmt.Printf("Size of each file in Mb: %d\n", config.sizeOfFileMB)
+	fmt.Printf("Size of PVC in Gb: %d\n", config.sizeOfPVCGB)
+	sizeOfPVCMB := config.sizeOfPVCGB * 1024
+	numberOfFiles := (config.sizeOfPVCMB) / (config.sizeOfFileMB - 1) // convert size of PVC to MB to calculate number of files to create
 	fmt.Printf("Number of files to create: %d\n", numberOfFiles)
 	fileSizeBytes := int(sizeOfFileMB * 1024 * 1024) // Convert file size from MB to bytes and convert to int
 	fmt.Printf("Size of each file: %dMb\n", sizeOfFileMB)
@@ -42,11 +41,11 @@ func main() {
 		<-done // while done is true
 	}
 	fmt.Printf("created %v files of size %vMb\n Took %s\n", numberOfFiles, sizeOfFileMB, time.Since(start))
-	churnInterval := 30 * time.Second // int Churn interval seconds load from config
-	churnPercentage := 0.5            // float64 Churn percentage
-	churnTicker := time.NewTicker(churnInterval)
+	// churnInterval := 30 * time.Second // int Churn interval seconds load from config
+	// churnPercentage := 0.5            // float64 Churn percentage
+	churnTicker := time.NewTicker(config.churnIntervalMinutes)
 	go func() {
-		log.Printf("Churning %v percent of files every %v", (churnPercentage * 100), churnInterval)
+		log.Printf("Churning %v percent of files every %v", (config.churnPercentage * 100), churnInterval)
 		for {
 			select {
 			case <-churnTicker.C:

@@ -1,4 +1,4 @@
-BINARY_NAME=createTestEnv
+BINARY_NAME=k8s-file-churner
 
 build: 
 

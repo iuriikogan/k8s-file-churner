@@ -1,4 +1,4 @@
-module github.com/iuriikogan/createTestEnv
+module github.com/iuriikogan/k8s-file-churner
 
 go 1.20
 
