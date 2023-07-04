@@ -1,12 +1,9 @@
-echo 'Creating Namespaces and Deployments'
+echo 'Creating Namespaces and Deployments ...'
 ./setenv.sh
 # Loop to create namespaces and deployments
 for ((i=1; i<=NUM_NAMESPACES; i++))
 do
   NAMESPACE="$NAMESPACE_PREFIX-$i"
-  echo "*************************************************"
-  echo "tried creating namespace: $NAMESPACE"
-  echo "*************************************************"
   # Create the namespace
   kubectl create namespace $NAMESPACE
   # Create the PVCs and deployments for $NUM_OF_PVC_PER_NS
@@ -62,8 +59,6 @@ EOF
             persistentVolumeClaim:
               claimName: pvc-${NAMESPACE}-${j}
 EOF
+echo 'Done creating PVCs and Deployments for namespace: ' $NAMESPACE
 done
-  echo "*************************************************"
-  echo "Tried to create pvcs and deployments in $NAMESPACE"
-  echo "*************************************************"
-done
+

@@ -16,10 +16,10 @@ type Config struct {
 
 func LoadConfig() (config *Config, err error) {
 	// Set default values
-	viper.SetDefault("APP_SIZE_OF_FILE_MB", 999)
-	viper.SetDefault("APP_SIZE_OF_PVC_GB", 30)
+	viper.SetDefault("APP_SIZE_OF_FILE_MB", 100)
+	viper.SetDefault("APP_SIZE_OF_PVC_GB", 5)
 	viper.SetDefault("APP_CHURN_PERCENTAGE", 0.20)
-	viper.SetDefault("APP_CHURN_INTERVAL_MINUTES", 3600)
+	viper.SetDefault("APP_CHURN_INTERVAL_MINUTES", 1)
 
 	// read environment variables
 	viper.SetEnvPrefix("APP")

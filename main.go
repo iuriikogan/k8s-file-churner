@@ -15,13 +15,19 @@ import (
 )
 
 func main() {
-	start := time.Now()
-	runtime.GOMAXPROCS(10)            // set the number of threads to run
+	// Create the data directory if it doesn't exist
+	err := os.MkdirAll("data", 0755)
+	if err != nil {
+		panic(err)
+	} // panic if the directory cannot be created
+	// TODO fix live() unlive() functions // k8s liveness probe
+	runtime.GOMAXPROCS(4)             // set the number of threads to run
 	config, err := utils.LoadConfig() // load the config from the current directory
 	if err != nil {
+		// unlive()
 		log.Printf("Failed to load config: %v", err)
 	}
-
+	start := time.Now() // start the timer
 	fmt.Printf("Size of each file in Mb: %d\n", config.SizeOfFileMB)
 
 	fmt.Printf("Size of PVC in Gb: %d\n", config.SizeOfPVCGB)
@@ -44,22 +50,25 @@ func main() {
 	for i := 0; i < numberOfFiles; i++ {
 		<-done // while done is true
 	}
+	// unlive() // set the liveness probe to false until the churn starts
 	fmt.Printf("created %v files of size %vMb\n Took %s\n", numberOfFiles, config.SizeOfFileMB, time.Since(start))
-	churnInterval := config.ChurnIntervalMinutes * time.Minute // time.Duration Churn interval
-	// churnPercentage := 0.5            // float64 Churn percentage
-	churnTicker := time.NewTicker(churnInterval) //
+	churnInterval := time.Duration(config.ChurnIntervalMinutes * 60 * 1000 * 1000 * 1000)
+	fmt.Printf("Churn interval: %v\n", churnInterval)
+	// time.Duration hurn Interval in Minutes due to type mismatch has to be resolved here instead of in the config.go file
+	churnTicker := time.NewTicker(churnInterval)
 	go func() {
-		log.Printf("Churning %v percent of files every %v", (config.ChurnPercentage * 100), config.ChurnIntervalMinutes)
+		log.Printf("Churning %v percent of files every %v", (config.ChurnPercentage * 100), churnInterval)
+		// live() // set the liveness probe to true
 		for {
 			select {
 			case <-churnTicker.C:
+				// live()
 				churnFiles(config.ChurnPercentage, fileSizeBytes, done)
 			case <-time.After(10 * time.Second):
 				log.Println("Waiting to churn files")
 			}
 		}
 	}()
-
 	// Keep the program running until interrupted
 	<-make(chan struct{})
 }
@@ -71,6 +80,7 @@ func createFile(fileSizeBytes int, fileIndex int, done chan<- bool) {
 	file, err := os.Create(fileName) // Create the file
 	if err != nil {
 		done <- false
+		// unlive()
 		panic(err)
 	}
 	defer file.Close()
@@ -79,6 +89,7 @@ func createFile(fileSizeBytes int, fileIndex int, done chan<- bool) {
 	writeRandomData(file, fileSizeBytes, err)
 	if err != nil {
 		done <- false
+		// unlive()
 		panic(err)
 	}
 	done <- true
@@ -89,6 +100,7 @@ func writeRandomData(file *os.File, fileSizeBytes int, err error) {
 	rand.Seed(time.Now().UnixNano()) // Seed the random number generator
 	if err != nil {
 		log.Printf("Failed to write data to file %s\n, Error: %s", file.Name(), err)
+		// unlive()
 		panic(err)
 	}
 
@@ -112,6 +124,7 @@ func writeRandomData(file *os.File, fileSizeBytes int, err error) {
 func churnFiles(churnPercentage float64, fileSizeBytes int, done chan<- bool) {
 	files, err := os.ReadDir("data/")
 	if err != nil {
+		// unlive()
 		log.Fatal(err)
 		return
 	}
@@ -123,6 +136,7 @@ func churnFiles(churnPercentage float64, fileSizeBytes int, done chan<- bool) {
 	numberOfFiles := len(files)
 	numberOfFilesToDelete := int(float64(numberOfFiles) * churnPercentage)
 	if numberOfFilesToDelete == 0 {
+		// unlive()
 		log.Println("No files to churn.")
 		return
 	}
@@ -145,4 +159,14 @@ func churnFiles(churnPercentage float64, fileSizeBytes int, done chan<- bool) {
 		<-done
 	}
 	done <- true
+}
+
+func live() {
+	os.WriteFile("tmp/healthy", []byte("ok"), 0664) // liveness prob	if err != nil
+	panic("unable to set liveness probe")
+}
+
+func unlive() {
+	os.Remove("tmp/healthy") // liveness probe
+	panic("unable to unset liveness probe")
 }
