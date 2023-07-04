@@ -1,5 +1,7 @@
-echo 'Creating Namespaces and Deployments ...'
-./setenv.sh
+echo "-------Deploying K8sFileChurner"
+starttime=$(date +%s)
+. ./setenv.sh
+echo 'starting to create deployments'
 # Loop to create namespaces and deployments
 for ((i=1; i<=NUM_NAMESPACES; i++))
 do
@@ -19,7 +21,7 @@ do
         - ReadWriteOnce
       resources:
         requests:
-          storage: ${PVC_SIZE_GB}
+          storage: ${APP_PVC_SIZE_GB}
       storageClassName: ${STORAGE_CLASS}
 EOF
 
@@ -45,7 +47,7 @@ EOF
               imagePullPolicy: Always
               volumeMounts:
               - name: data
-                mountPath: app/data/
+                mountPath: app/
               resources:
                 requests:
                   memory: 1Gi
@@ -53,12 +55,14 @@ EOF
                 limits:  
                   memory: 1Gi
                   cpu: 1
-              command: ["sh", "-c"]
           volumes:
           - name: data
             persistentVolumeClaim:
               claimName: pvc-${NAMESPACE}-${j}
 EOF
-echo 'Done creating PVCs and Deployments for namespace: ' $NAMESPACE
 done
 
+done
+endtime=$(date +%s)
+duration=$(( $endtime - $starttime ))
+echo "-------Finished deploying K8sFileChurner in $(($duration / 60)) minutes $(($duration % 60)) seconds."
