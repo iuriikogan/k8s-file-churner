@@ -28,13 +28,14 @@ type Config struct {
 
 func LoadConfig() (*Config, error) {
 	// Environment variables
-	viper.AutomaticEnv()
 	viper.SetEnvPrefix("APP")
+	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 
 	// Configuration file
-	viper.SetConfigType("yml")
-
+	viper.SetConfigType("yaml")
+	viper.SetConfigName("app-cm")
+	viper.AddConfigPath("/etc/config/")
 	// Read configuration
 	if err := viper.ReadConfig(bytes.NewBuffer(defaultConfiguration)); err != nil {
 		return nil, err
