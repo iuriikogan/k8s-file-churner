@@ -58,7 +58,7 @@ EOF
                   cpu: 0.5
                 limits:  
                   memory: 1Gi
-                  cpu: 1
+                  cpu: 1    
           volumes:
           - name: data
             persistentVolumeClaim:
