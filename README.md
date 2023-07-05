@@ -1,38 +1,38 @@
-# ./createTestEnv
-    Go bin which writes a number of files with random data to /data/ directory
+# k8s-file-churner
 
+The **k8s-file-churner** is a tool designed to simulate file churn in a Kubernetes environment. It creates and churns a specified number of files within a directory, allowing you to test the behavior of your storage systems or applications that interact with the files.
 
-# to deploy to k8s 
+## Features
 
-    git clone https://github.com/iuriikogan/createTestEnv-image.git
+- Creates a specified number of files with random data.
+- Churns a percentage of the files by deleting them and recreating them with new random data.
+- Supports customization of file size, churn percentage, and churn interval through a configuration file.
+- Concurrent file creation and churn operations using goroutines.
+- Outputs statistics such as the size of each file, the number of files created, and the time taken for the operation.
 
-    cd deploy-k8s
+## Prerequisites
 
-    vi setEnv.sh ## set the required env variables to tune your test environment
+- Go 1.16 or higher installed on your machine.
+- Kubernetes cluster configured and accessible via `kubectl`.
 
-    ./deploy.sh
-    deploys x deployments with x replicas/pvcs in x namespaces with x storage class 
+## Getting Started
 
-    ./detroy.sh 
-  
-    deletes all the namespaces beginning with $NAMESPACE_PREFIX
+1. Clone the repository:
 
-# Create bin from Makefile 
+   ```shell
+   git clone https://github.com/iuriikogan/k8s-file-churner.git
+   cd deploy-k8s/
+2. Set the env variables in setenv.sh
 
-## make build 
-    build binary and copies to /bin/${BINARY_NAME}
+   ```shell
+   vi setenv.sh
 
-## make run
-    make build and run the binary
+3. deploy to k8s (**Double check you are in the right context**)
 
-## make clean
-    delete the binary in /bin/${BINARY_NAME} and any local test files in /data dir as well as delete all the namespace with $NAMESPACE_PREFIX
+   ```shell
+   ./deploy-k8s
 
-# Run container locally
-    podman build -t <repository:tag> .
-    podman run <repository:tag>
-
-## clean up local test file
-  
-    ./utils/deleteTestFiles.sh
-    cleans up test files from data/ dir from running the image locally
+4. delete the test namespaces
+ 
+    ```shell
+    ./destroy.sh
