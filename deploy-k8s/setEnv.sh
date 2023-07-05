@@ -1,4 +1,3 @@
-#!/bin/bash
 export NUM_NAMESPACES=1
 export NAMESPACE_PREFIX="test"
 export STORAGE_CLASS_NAME="managed-premium" # only RWO Storage classes

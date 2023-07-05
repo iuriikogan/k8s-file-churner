@@ -37,7 +37,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: ${SIZE_OF_PVC_GB}Gi
+      storage: ${APP_SIZE_OF_PVC_GB}Gi
   storageClassName: ${STORAGE_CLASS}
 EOF
 
