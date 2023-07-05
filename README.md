@@ -26,19 +26,23 @@ The **k8s-file-churner** is a tool designed to simulate file churn in a Kubernet
    ```shell
    git clone https://github.com/iuriikogan/k8s-file-churner.git
    ```
-Navigate to deoloy-k8s/
+2. Navigate to the created directory
 
-2. Set the env variables in setenv.sh
+   ```shell
+   cd deploy-k8s/
+   ```
+
+3. Set the env variables in setenv.sh
 
    ```shell
    vi setenv.sh
    ```
-3. deploy to k8s (**Double check you are in the right context**)
+4. deploy to k8s (**Double check you are in the right context**)
 
    ```shell
    ./deploy-k8s
    ```
-4. delete the test namespaces
+5. delete the test namespaces
  
     ```shell
     ./destroy.sh
