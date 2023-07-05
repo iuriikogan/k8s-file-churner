@@ -40,7 +40,7 @@ The **k8s-file-churner** is a tool designed to simulate file churn in a Kubernet
     ```
 ## Build from the source
 
-1. Navigate to the project directory and build the binaries from the Makefile
+1. Navigate to the root project directory and build the binaries from the Makefile
 
 2. This will generate the binary file 'bin/k8sFileChurner'
    ```shell
