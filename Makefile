@@ -6,7 +6,7 @@ build:
 
 run: build
 	
-	./bin/$(BINARY_NAME) -mod=readonly
+	./bin/$(BINARY_NAME)
 
 test: 
 

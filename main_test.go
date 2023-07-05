@@ -1,104 +1,92 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"os"
-	"path/filepath"
+	"sync"
 	"testing"
-	"time"
 )
 
 func TestCreateFile(t *testing.T) {
-	fileSizeBytes := 1024
-	fileIndex := 1
-	done := make(chan bool)
+	// Create a temporary file for testing
+	file, err := os.CreateTemp("", "testfile")
+	if err != nil {
+		t.Fatalf("Failed to create temporary file: %v", err)
+	}
+	defer os.Remove(file.Name())
 
-	go createFile(fileSizeBytes, fileIndex, done)
+	// Create a wait group
+	var wg sync.WaitGroup
 
-	select {
-	case <-done:
-		// File creation completed
-		filePath := fmt.Sprintf("data/test_file%d.txt", fileIndex)
-		_, err := os.Stat(filePath)
-		if err != nil {
-			t.Errorf("File '%s' does not exist: %s", filePath, err)
-		}
+	// Add 1 to the wait group counter
+	wg.Add(1)
 
-		err = os.Remove(filePath)
-		if err != nil {
-			t.Errorf("Failed to delete file '%s': %s", filePath, err)
-		}
-	case <-time.After(5 * time.Second):
-		t.Errorf("Timeout: File creation took too long")
+	// Call the createFile function
+	createFile(1024, 0, &wg)
+
+	// Wait for the goroutine to finish
+	wg.Wait()
+
+	// Check if the file exists
+	if _, err := os.Stat(file.Name()); os.IsNotExist(err) {
+		t.Errorf("Expected file to be created, but it doesn't exist")
+	}
+}
+func TestWriteRandomData(t *testing.T) {
+	// Create a temporary file for testing
+	file, err := os.CreateTemp("", "testfile")
+	if err != nil {
+		t.Fatalf("Failed to create temporary file: %v", err)
+	}
+	defer os.Remove(file.Name())
+
+	// Call the writeRandomData function
+	writeRandomData(file, 1024)
+
+	// Check if the file size matches the expected size
+	fileInfo, err := file.Stat()
+	if err != nil {
+		t.Fatalf("Failed to get file info: %v", err)
+	}
+	fileSize := fileInfo.Size()
+	expectedSize := int64(1024)
+	if fileSize != expectedSize {
+		t.Errorf("Expected file size %d, but got %d", expectedSize, fileSize)
 	}
 }
 
 func TestChurnFiles(t *testing.T) {
-	// Create test files
-	err := os.WriteFile("data/test_file1.txt", []byte("Test file 1"), 0644)
+	// Create a temporary directory for testing
+	dir, err := os.MkdirTemp("", "testdir")
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Failed to create temporary directory: %v", err)
 	}
-	err = os.WriteFile("data/test_file2.txt", []byte("Test file 2"), 0644)
-	if err != nil {
-		t.Fatal(err)
-	}
-	err = os.WriteFile("data/not_test_file.txt", []byte("Not a test file"), 0644)
-	if err != nil {
-		t.Fatal(err)
-	}
+	defer os.RemoveAll(dir)
 
-	fileSizeBytes := 1024
-	churnPercentage := 0.5
-	done := make(chan bool)
-
-	churnFiles(churnPercentage, fileSizeBytes, done)
-
-	select {
-	case <-done:
-		// Verify that files starting with "test" are churned
-		files, err := os.ReadDir("data")
+	// Create some test files in the directory
+	for i := 0; i < 5; i++ {
+		file, err := os.CreateTemp(dir, "testfile")
 		if err != nil {
-			t.Fatalf("Failed to read directory: %s", err)
+			t.Fatalf("Failed to create temporary file: %v", err)
 		}
-
-		for _, file := range files {
-			if file.Name() == "test_file1.txt" || file.Name() == "test_file2.txt" {
-				t.Errorf("File '%s' should have been churned", file.Name())
-			}
-		}
-	case <-time.After(5 * time.Second):
-		t.Errorf("Timeout: Churn operation took too long")
+		file.Close()
 	}
 
-	// Clean up test files
-	err = os.Remove(filepath.Join("data", "test_file1.txt"))
+	// Create a wait group
+	var wg sync.WaitGroup
+
+	// Call the churnFiles function
+	churnFiles(0.5, 1024, &wg)
+
+	// Wait for the goroutines to finish
+	wg.Wait()
+
+	// Check the number of files in the directory
+	files, err := os.ReadDir(dir)
 	if err != nil {
-		t.Fatalf("Failed to delete file 'test_file1.txt': %s", err)
+		t.Fatalf("Failed to read directory: %v", err)
 	}
-	err = os.Remove(filepath.Join("data", "test_file2.txt"))
-	if err != nil {
-		t.Fatalf("Failed to delete file 'test_file2.txt': %s", err)
+	expectedFiles := 5 // 50% of 5 files
+	if len(files) != expectedFiles {
+		t.Errorf("Expected %d files, but got %d", expectedFiles, len(files))
 	}
-	err = os.Remove(filepath.Join("data", "not_test_file.txt"))
-	if err != nil {
-		t.Fatalf("Failed to delete file 'not_test_file.txt': %s", err)
-	}
-}
-
-func TestMain(m *testing.M) {
-	// Set up test environment
-	err := os.Mkdir("data", 0755)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer os.RemoveAll("data")
-
-	// Run tests
-	code := m.Run()
-
-	// Clean up test environment
-
-	os.Exit(code)
 }

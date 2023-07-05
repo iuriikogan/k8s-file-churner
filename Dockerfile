@@ -1,15 +1,8 @@
-# Build Stage
-FROM golang:1.19-alpine AS builder
+#!/bin/bash
+FROM golang:1.19-alpine
 WORKDIR /app
-COPY *.go ./
-RUN CGO_ENABLED=0 GOOS=linux go build -o ./k8s-file-churner main.go
-
-# Run Stage
-FROM alpine:3.13
-WORKDIR /app
-COPY --from=builder /app/k8s-file-churner ./
-RUN mkdir -p /app/data
-
-ENTRYPOINT [ "/app/k8s-file-churner" ] 
-
-
+COPY go.* ./
+RUN go mod download
+COPY . ./
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app/k8sFileChurner main.go
+CMD ["/app/k8sFileChurner"]

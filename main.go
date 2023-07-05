@@ -1,14 +1,16 @@
 package main
 
 import (
+	"crypto/rand"
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"runtime"
 	"sort"
+	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/iuriikogan/k8s-file-churner/utils"
@@ -16,94 +18,78 @@ import (
 
 func main() {
 	// Create the data directory if it doesn't exist
-	err := os.MkdirAll("data", 0755)
+	err := os.MkdirAll("testfiles", 0777)
 	if err != nil {
 		panic(err)
 	} // panic if the directory cannot be created
-	// TODO fix live() unlive() functions // k8s liveness probe
+
 	runtime.GOMAXPROCS(4)             // set the number of threads to run
 	config, err := utils.LoadConfig() // load the config from the current directory
 	if err != nil {
-		// unlive()
 		log.Printf("Failed to load config: %v", err)
+		os.Exit(1)
 	}
 	start := time.Now() // start the timer
 	fmt.Printf("Size of each file in Mb: %d\n", config.SizeOfFileMB)
-
 	fmt.Printf("Size of PVC in Gb: %d\n", config.SizeOfPVCGB)
 
 	sizeOfPVCMB := config.SizeOfPVCGB * 1024
-
 	numberOfFiles := (sizeOfPVCMB) / (config.SizeOfFileMB) // convert size of PVC to MB to calculate number of files to create
-
 	fmt.Printf("Number of files to create: %d\n", numberOfFiles)
 
 	fileSizeBytes := int(config.SizeOfFileMB * 1024 * 1024) // Convert file size from MB to bytes and convert to int
 	fmt.Printf("Size of each file: %dMb\n", config.SizeOfFileMB)
-	done := make(chan bool) // which sets done when a createfile routine is created and closes the channel when done is true
+
+	var wg sync.WaitGroup
+	wg.Add(numberOfFiles) // increment the wait group counter
 
 	// Launch a goroutine for each file creation
 	for i := 0; i < numberOfFiles; i++ {
-		go createFile(fileSizeBytes, i, done)
+		go createFile(fileSizeBytes, i, &wg)
 	}
+
 	// Wait for all the goroutines to finish
-	for i := 0; i < numberOfFiles; i++ {
-		<-done // while done is true
-	}
-	// unlive() // set the liveness probe to false until the churn starts
-	fmt.Printf("created %v files of size %vMb\n Took %s\n", numberOfFiles, config.SizeOfFileMB, time.Since(start))
+	wg.Wait()
+
+	fmt.Printf("Created %v files of size %vMb\nTook %s\n", numberOfFiles, config.SizeOfFileMB, time.Since(start))
+
 	churnInterval := time.Duration(config.ChurnIntervalMinutes * 60 * 1000 * 1000 * 1000)
 	fmt.Printf("Churn interval: %v\n", churnInterval)
-	// time.Duration hurn Interval in Minutes due to type mismatch has to be resolved here instead of in the config.go file
+
 	churnTicker := time.NewTicker(churnInterval)
 	go func() {
 		log.Printf("Churning %v percent of files every %v", (config.ChurnPercentage * 100), churnInterval)
-		// live() // set the liveness probe to true
+
 		for {
 			select {
 			case <-churnTicker.C:
-				// live()
-				churnFiles(config.ChurnPercentage, fileSizeBytes, done)
+				churnFiles(config.ChurnPercentage, fileSizeBytes, &wg)
 			case <-time.After(10 * time.Second):
 				log.Println("Waiting to churn files")
 			}
 		}
 	}()
+
 	// Keep the program running until interrupted
 	<-make(chan struct{})
 }
 
-func createFile(fileSizeBytes int, fileIndex int, done chan<- bool) {
+func createFile(fileSizeBytes int, fileIndex int, wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	// Generate a file name
-	fileName := fmt.Sprintf("data/test_file%d.txt", fileIndex)
-	// TODO check the directory exists and create it if it doesn't (currently done as part of the dockerfile)
+	fileName := fmt.Sprintf("testfiles/%d.txt", fileIndex)
 	file, err := os.Create(fileName) // Create the file
 	if err != nil {
-		done <- false
-		// unlive()
-		panic(err)
+		log.Printf("Failed to create file '%s': %s\n", fileName, err)
+		return
 	}
 	defer file.Close()
 
-	// Write random data to the file and send a message to the channel when done
-	writeRandomData(file, fileSizeBytes, err)
-	if err != nil {
-		done <- false
-		// unlive()
-		panic(err)
-	}
-	done <- true
+	writeRandomData(file, fileSizeBytes)
 }
 
-// write random data using the math/rand package since there is no need for crypotographically secure random data
-func writeRandomData(file *os.File, fileSizeBytes int, err error) {
-	rand.Seed(time.Now().UnixNano()) // Seed the random number generator
-	if err != nil {
-		log.Printf("Failed to write data to file %s\n, Error: %s", file.Name(), err)
-		// unlive()
-		panic(err)
-	}
-
+func writeRandomData(file *os.File, fileSizeBytes int) {
 	chunkSize := 4096
 	chunks := fileSizeBytes / chunkSize
 
@@ -121,52 +107,60 @@ func writeRandomData(file *os.File, fileSizeBytes int, err error) {
 	}
 }
 
-func churnFiles(churnPercentage float64, fileSizeBytes int, done chan<- bool) {
-	files, err := os.ReadDir("data/")
+func churnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) {
+	files, err := os.ReadDir("testfiles/")
 	if err != nil {
-		// unlive()
 		log.Fatal(err)
 		return
 	}
 
-	sort.Slice(files, func(i, j int) bool {
-		return files[i].Name() < files[j].Name()
-	})
-
 	numberOfFiles := len(files)
 	numberOfFilesToDelete := int(float64(numberOfFiles) * churnPercentage)
 	if numberOfFilesToDelete == 0 {
-		// unlive()
 		log.Println("No files to churn.")
 		return
 	}
+
+	sort.Slice(files, func(i, j int) bool {
+		fileNum1 := extractFileNumber(files[i].Name())
+		fileNum2 := extractFileNumber(files[j].Name())
+		return fileNum1 < fileNum2
+	})
+
 	// Delete the first numFilesToDelete files if they start with "test" and are not directories
 	for i := 0; i < numberOfFilesToDelete; i++ {
 		file := files[i]
-		done := make(chan bool)
-		if strings.HasPrefix(file.Name(), "test") && !file.IsDir() { // check if file begins with test
-			filePath := filepath.Join("data", file.Name())
-			err := os.Remove(filePath)
-			if err != nil {
-				log.Printf("Failed to delete file '%s': %s\n", filePath, err)
-				continue
-			}
-			log.Printf("Deleted file '%s'\n", filePath)
-			go createFile(fileSizeBytes, i, done)
+		filePath := filepath.Join("testfiles", file.Name())
+		err := os.Remove(filePath)
+		if err != nil {
+			log.Printf("Failed to delete file '%s': %s\n", filePath, err)
+			continue
 		}
-		for i := 0; i < numberOfFiles; i++ {
-		}
-		<-done
+		log.Printf("Deleted file '%s'\n", filePath)
 	}
-	done <- true
+
+	wg.Add(numberOfFilesToDelete) // increment the wait group counter
+
+	// Create the same number of files that were deleted in the sorted order
+	for i := 0; i < numberOfFilesToDelete; i++ {
+		log.Printf("Creating file testfiles/%d.txt\n", i)
+		go createFile(fileSizeBytes, i, wg)
+	}
 }
 
-func live() {
-	os.WriteFile("tmp/healthy", []byte("ok"), 0664) // liveness prob	if err != nil
-	panic("unable to set liveness probe")
+func extractFileNumber(fileName string) int {
+	// Extract the numeric part of the file name, assuming the format "testfiles/{number}.txt"
+	numberStr := strings.TrimSuffix(strings.TrimPrefix(fileName, "testfiles/"), ".txt")
+	fileNum, _ := strconv.Atoi(numberStr)
+	return fileNum
 }
 
-func unlive() {
-	os.Remove("tmp/healthy") // liveness probe
-	panic("unable to unset liveness probe")
-}
+// func live() {
+// 	os.WriteFile("tmp/healthy", []byte("ok"), 0664) // liveness prob	if err != nil
+// 	panic("unable to set liveness probe")
+// }
+
+// func unlive() {
+// 	os.Remove("tmp/healthy") // liveness probe
+// 	panic("unable to unset liveness probe")
+// }

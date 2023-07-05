@@ -1,3 +1,4 @@
+#!/bin/bash
 echo "-------Deploying K8sFileChurner"
 starttime=$(date +%s)
 . ./setenv.sh
