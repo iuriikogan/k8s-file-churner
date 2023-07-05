@@ -13,34 +13,35 @@ import (
 //go:embed config.yaml
 var defaultConfiguration []byte
 
-type App struct {
-	SizeOfFileMB         int           `mapstructure:"SIZE_OF_FILES_MB"`
-	SizeOfPVCGB          int           `mapstructure:"SIZE_OF_PVC_GB"`
-	ChurnPercentage      float64       `mapstructure:"CHURN_PERCENTAGE"`
-	ChurnIntervalMinutes time.Duration `mapstructure:"CHURN_PERCENTAGE"`
-}
-
 type Config struct {
-	App *App `mapstructure:"APP"`
+	SizeOfFileMB         int           `mapstructure:"APP_SIZE_OF_FILES_MB"`
+	SizeOfPVCGB          int           `mapstructure:"APP_SIZE_OF_PVC_GB"`
+	ChurnPercentage      float64       `mapstructure:"APP_CHURN_PERCENTAGE"`
+	ChurnIntervalMinutes time.Duration `mapstructure:"APP_CHURN_INTERVAL_MINUTES"`
 }
 
 func LoadConfig() (*Config, error) {
+	v := viper.New()
 
-	// Configuration file
-	viper.SetConfigType("yaml")
-	viper.SetConfigName("app-cm")
-	viper.AddConfigPath("/etc/config/")
-	// Read configuration
-	if err := viper.ReadConfig(bytes.NewBuffer(defaultConfiguration)); err != nil {
+	// Read configuration from environment variables
+	v.AutomaticEnv()
+	v.BindEnv("APP_SIZE_OF_FILES_MB")
+	v.BindEnv("APP_SIZE_OF_PVC_GB")
+	v.BindEnv("APP_CHURN_PERCENTAGE")
+	v.BindEnv("APP_CHURN_INTERVAL_MINUTES")
+
+	// Read default configuration from embedded file
+	err := v.ReadConfig(bytes.NewBuffer(defaultConfiguration))
+	if err != nil {
 		return nil, err
 	}
-	// merge with the external config file if it exists
-	viper.MergeInConfig()
 
 	// Unmarshal the configuration
 	var config Config
-	if err := viper.Unmarshal(&config); err != nil {
+	err = v.Unmarshal(&config)
+	if err != nil {
 		return nil, err
 	}
+
 	return &config, nil
 }

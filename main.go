@@ -29,15 +29,15 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	start := time.Now() // start the timer
-	fmt.Printf("Size of each file in Mb: %d\n", cfg.App.SizeOfFileMB)
-	fmt.Printf("Size of PVC in Gb: %d\n", cfg.App.SizeOfPVCGB)
+	fmt.Printf("Size of each file in Mb: %d\n", cfg.SizeOfFileMB)
+	fmt.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
 
-	sizeOfPVCMB := cfg.App.SizeOfPVCGB * 1023
-	numberOfFiles := (sizeOfPVCMB) / (cfg.App.SizeOfFileMB) // convert size of PVC to MB to calculate number of files to create
+	sizeOfPVCMB := cfg.SizeOfPVCGB * 1023
+	numberOfFiles := (sizeOfPVCMB) / (cfg.SizeOfFileMB) // convert size of PVC to MB to calculate number of files to create
 	fmt.Printf("Number of files to create: %d\n", numberOfFiles)
 
-	fileSizeBytes := int(cfg.App.SizeOfFileMB * 1024 * 1024) // Convert file size from MB to bytes and convert to int
-	fmt.Printf("Size of each file: %dMb\n", cfg.App.SizeOfFileMB)
+	fileSizeBytes := int(cfg.SizeOfFileMB * 1024 * 1024) // Convert file size from MB to bytes and convert to int
+	fmt.Printf("Size of each file: %dMb\n", cfg.SizeOfFileMB)
 	var wg sync.WaitGroup
 	wg.Add(numberOfFiles) // increment the wait group counter
 
@@ -49,19 +49,19 @@ func main() {
 	// Wait for all the goroutines to finish
 	wg.Wait()
 
-	fmt.Printf("Created %v files of size %vMb\nTook %s\n", numberOfFiles, cfg.App.SizeOfFileMB, time.Since(start))
+	fmt.Printf("Created %v files of size %vMb\nTook %s\n", numberOfFiles, cfg.SizeOfFileMB, time.Since(start))
 
-	churnInterval := time.Duration(cfg.App.ChurnIntervalMinutes * 60 * 1000 * 1000 * 1000)
+	churnInterval := time.Duration(cfg.ChurnIntervalMinutes * 60 * 1000 * 1000 * 1000)
 	fmt.Printf("Churn interval: %v\n", churnInterval)
 
 	churnTicker := time.NewTicker(churnInterval)
 	go func() {
-		log.Printf("Churning %v percent of files every %v", (cfg.App.ChurnPercentage * 100), churnInterval)
+		log.Printf("Churning %v percent of files every %v", (cfg.ChurnPercentage * 100), churnInterval)
 
 		for {
 			select {
 			case <-churnTicker.C:
-				churnFiles(cfg.App.ChurnPercentage, fileSizeBytes, &wg)
+				churnFiles(cfg.ChurnPercentage, fileSizeBytes, &wg)
 			case <-time.After(10 * time.Second):
 				log.Println("Waiting to churn files")
 			}
