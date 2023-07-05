@@ -10,7 +10,7 @@ run: build
 
 test: 
 
-	go test --verbose ./... --count=1
+	go test ./... -v --count=1
 
 clean:
 

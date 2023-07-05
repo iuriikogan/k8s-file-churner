@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strconv"
 	"sync"
 	"testing"
 )
@@ -60,33 +61,36 @@ func TestChurnFiles(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temporary directory: %v", err)
 	}
-	defer os.RemoveAll(dir)
-
 	// Create some test files in the directory
 	for i := 0; i < 5; i++ {
-		file, err := os.CreateTemp(dir, "testfile")
+		file, err := os.CreateTemp(dir, strconv.Itoa(i))
 		if err != nil {
 			t.Fatalf("Failed to create temporary file: %v", err)
 		}
 		file.Close()
 	}
-
-	// Create a wait group
-	var wg sync.WaitGroup
-
-	// Call the churnFiles function
-	churnFiles(0.5, 1024, &wg)
-
-	// Wait for the goroutines to finish
-	wg.Wait()
-
-	// Check the number of files in the directory
-	files, err := os.ReadDir(dir)
+	// Get the initial number of files
+	initialFiles, err := os.ReadDir(dir)
 	if err != nil {
 		t.Fatalf("Failed to read directory: %v", err)
 	}
-	expectedFiles := 5 // 50% of 5 files
-	if len(files) != expectedFiles {
-		t.Errorf("Expected %d files, but got %d", expectedFiles, len(files))
+	initialFileCount := len(initialFiles)
+	// Create a wait group
+	var wg sync.WaitGroup
+	// Call the churnFiles function
+	churnFiles(0.2, 1024, &wg)
+	// Wait for the goroutines to finish
+	wg.Wait()
+	// Get the number of files after the churn operation
+	updatedFiles, err := os.ReadDir(dir)
+	if err != nil {
+		t.Fatalf("Failed to read directory: %v", err)
+	}
+	updatedFileCount := len(updatedFiles)
+
+	// Check the number of files in the directory
+	expectedFiles := initialFileCount
+	if updatedFileCount != expectedFiles {
+		t.Errorf("Expected %d files, but got %d", expectedFiles, updatedFileCount)
 	}
 }
