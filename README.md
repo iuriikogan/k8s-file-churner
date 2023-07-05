@@ -16,6 +16,10 @@ The **k8s-file-churner** is a tool designed to simulate file churn in a Kubernet
 - Go 1.16 or higher installed on your machine.
 - Kubernetes cluster configured and accessible via `kubectl`.
 
+## Limitations
+
+- Currently only RWO storage classes are supported
+
 ## Getting Started
 
 1. Clone the repository:
