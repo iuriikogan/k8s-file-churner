@@ -9,17 +9,16 @@ import (
 	"github.com/spf13/viper"
 )
 
-// defaultConfiguration is the default configuration, embedded in the binary.
-
-//go:embed config.yaml
+// defaultConfiguration is from app-cm.yaml, embedded in the binary
+//
+//go:embed app-cm.yaml
 var defaultConfiguration []byte
 
-// Config
 type App struct {
-	SizeOfFileMB         int           // Size of the file in GB
-	SizeOfPVCGB          int           // Number of files to create
-	ChurnPercentage      float64       // Percentage of files to churn must be passed as float64 (0.5 = 50%)
-	ChurnIntervalMinutes time.Duration // Churn interval in minutes
+	SizeOfFileMB         int           `mapstructure:"APP_SIZE_OF_FILES_MB"`
+	SizeOfPVCGB          int           `mapstructure:"APP_SIZE_OF_PVC_GB"`
+	ChurnPercentage      float64       `mapstructure:"APP_CHURN_PERCENTAGE"`
+	ChurnIntervalMinutes time.Duration `mapstructure:"APP_CHURN_PERCENTAGE"`
 }
 
 type Config struct {
@@ -27,7 +26,6 @@ type Config struct {
 }
 
 func LoadConfig() (*Config, error) {
-	// Environment variables
 	viper.SetEnvPrefix("APP")
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
@@ -40,6 +38,8 @@ func LoadConfig() (*Config, error) {
 	if err := viper.ReadConfig(bytes.NewBuffer(defaultConfiguration)); err != nil {
 		return nil, err
 	}
+	// merge with the external config file if it exists
+	viper.MergeInConfig()
 
 	// Unmarshal the configuration
 	var config Config

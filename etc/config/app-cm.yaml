@@ -4,6 +4,6 @@ metadata:
   name: app-cm
 data:
   APP_SIZE_OF_FILES_MB: "100"
-  APP_SIZE_OF_PVC_GB: "30"
+  APP_SIZE_OF_PVC_GB: "20"
   APP_CHURN_PERCENTAGE: "0.2"
   APP_CHURN_INTERVAL_MINUTES: "5"
