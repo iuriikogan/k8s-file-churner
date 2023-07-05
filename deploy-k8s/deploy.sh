@@ -23,7 +23,7 @@ do
         - ReadWriteOnce
       resources:
         requests:
-          storage: $
+          storage: ${APP_SIZE_OF_PVC_GB}Gi
       storageClassName: ${STORAGE_CLASS}
 EOF
 
