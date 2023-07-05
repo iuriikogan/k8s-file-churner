@@ -10,7 +10,7 @@ import (
 )
 
 // defaultConfiguration is the default configuration, embedded in the binary.
-//
+
 //go:embed config.yaml
 var defaultConfiguration []byte
 

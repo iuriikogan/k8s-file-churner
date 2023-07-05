@@ -32,7 +32,7 @@ func main() {
 	fmt.Printf("Size of each file in Mb: %d\n", cfg.App.SizeOfFileMB)
 	fmt.Printf("Size of PVC in Gb: %d\n", cfg.App.SizeOfPVCGB)
 
-	sizeOfPVCMB := cfg.App.SizeOfPVCGB * 1024
+	sizeOfPVCMB := cfg.App.SizeOfPVCGB * 1023
 	numberOfFiles := (sizeOfPVCMB) / (cfg.App.SizeOfFileMB) // convert size of PVC to MB to calculate number of files to create
 	fmt.Printf("Number of files to create: %d\n", numberOfFiles)
 
