@@ -22,17 +22,46 @@ The **k8s-file-churner** is a tool designed to simulate file churn in a Kubernet
    ```shell
    git clone https://github.com/iuriikogan/k8s-file-churner.git
    cd deploy-k8s/
+   ```
 2. Set the env variables in setenv.sh
 
    ```shell
    vi setenv.sh
-
+   ```
 3. deploy to k8s (**Double check you are in the right context**)
 
    ```shell
    ./deploy-k8s
-
+   ```
 4. delete the test namespaces
  
     ```shell
     ./destroy.sh
+    ```
+## Build from the source
+
+1. Navigate to the project directory and build the binaries from the Makefile
+
+2. This will generate the binary file 'bin/k8sFileChurner'
+   ```shell
+   make build
+   ```
+
+3. This will execute the application binary
+   ```shell
+   make run
+   ```
+
+4. This will run the tests for the project.
+   ```shell
+   make test
+   ```
+5. This will remove the generated binary, delete test files, and clean up any Kubernetes resources created during testing.
+   ```shell
+   make clean
+   ```
+## Contact Me!
+I'm always interested in collaborating and I'd love to hear your feedback!! - koganiurii@gmail.com
+
+
+
