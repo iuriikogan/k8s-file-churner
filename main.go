@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/iuriikogan/k8s-file-churner/utils"
+	"github.com/iuriikogan/k8s-file-churner/config"
 )
 
 func main() {
@@ -23,23 +23,21 @@ func main() {
 		panic(err)
 	} // panic if the directory cannot be created
 
-	runtime.GOMAXPROCS(4)             // set the number of threads to run
-	config, err := utils.LoadConfig() // load the config from the current directory
+	runtime.GOMAXPROCS(4) // set the number of threads to run
+	cfg, err := config.LoadConfig()
 	if err != nil {
-		log.Printf("Failed to load config: %v", err)
-		os.Exit(1)
+		log.Fatal(err.Error())
 	}
 	start := time.Now() // start the timer
-	fmt.Printf("Size of each file in Mb: %d\n", config.SizeOfFileMB)
-	fmt.Printf("Size of PVC in Gb: %d\n", config.SizeOfPVCGB)
+	fmt.Printf("Size of each file in Mb: %d\n", cfg.App.SizeOfFileMB)
+	fmt.Printf("Size of PVC in Gb: %d\n", cfg.App.SizeOfPVCGB)
 
-	sizeOfPVCMB := config.SizeOfPVCGB * 1024
-	numberOfFiles := (sizeOfPVCMB) / (config.SizeOfFileMB) // convert size of PVC to MB to calculate number of files to create
+	sizeOfPVCMB := cfg.App.SizeOfPVCGB * 1024
+	numberOfFiles := (sizeOfPVCMB) / (cfg.App.SizeOfFileMB) // convert size of PVC to MB to calculate number of files to create
 	fmt.Printf("Number of files to create: %d\n", numberOfFiles)
 
-	fileSizeBytes := int(config.SizeOfFileMB * 1024 * 1024) // Convert file size from MB to bytes and convert to int
-	fmt.Printf("Size of each file: %dMb\n", config.SizeOfFileMB)
-
+	fileSizeBytes := int(cfg.App.SizeOfFileMB * 1024 * 1024) // Convert file size from MB to bytes and convert to int
+	fmt.Printf("Size of each file: %dMb\n", cfg.App.SizeOfFileMB)
 	var wg sync.WaitGroup
 	wg.Add(numberOfFiles) // increment the wait group counter
 
@@ -51,19 +49,19 @@ func main() {
 	// Wait for all the goroutines to finish
 	wg.Wait()
 
-	fmt.Printf("Created %v files of size %vMb\nTook %s\n", numberOfFiles, config.SizeOfFileMB, time.Since(start))
+	fmt.Printf("Created %v files of size %vMb\nTook %s\n", numberOfFiles, cfg.App.SizeOfFileMB, time.Since(start))
 
-	churnInterval := time.Duration(config.ChurnIntervalMinutes * 60 * 1000 * 1000 * 1000)
+	churnInterval := time.Duration(cfg.App.ChurnIntervalMinutes * 60 * 1000 * 1000 * 1000)
 	fmt.Printf("Churn interval: %v\n", churnInterval)
 
 	churnTicker := time.NewTicker(churnInterval)
 	go func() {
-		log.Printf("Churning %v percent of files every %v", (config.ChurnPercentage * 100), churnInterval)
+		log.Printf("Churning %v percent of files every %v", (cfg.App.ChurnPercentage * 100), churnInterval)
 
 		for {
 			select {
 			case <-churnTicker.C:
-				churnFiles(config.ChurnPercentage, fileSizeBytes, &wg)
+				churnFiles(cfg.App.ChurnPercentage, fileSizeBytes, &wg)
 			case <-time.After(10 * time.Second):
 				log.Println("Waiting to churn files")
 			}

@@ -1,0 +1,5 @@
+APP:
+  SizeOfFileMB: 999
+  SizeOfPVCGB: 50
+  ChurnPercentage: 0.1
+  ChurnIntervalMinutes: 5
