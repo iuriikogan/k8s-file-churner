@@ -23,7 +23,7 @@ func main() {
 		panic(err)
 	} // panic if the directory cannot be created
 
-	runtime.GOMAXPROCS(4) // set the number of threads to run
+	runtime.GOMAXPROCS(10) // set the number of threads to run
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal(err.Error())
