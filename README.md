@@ -1,4 +1,5 @@
 # k8s-file-churner
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/iuriikogan/Travel-Tracker/blob/main/LICENSE)
 
 The **k8s-file-churner** is a tool designed to simulate file churn in a Kubernetes environment. It creates and churns a specified number of files within a directory, allowing you to test the behavior of your storage systems or applications that interact with the files.
 
@@ -40,7 +41,7 @@ The **k8s-file-churner** is a tool designed to simulate file churn in a Kubernet
     ```
 ## Build from the source
 
-1. Navigate to the project directory and build the binaries from the Makefile
+1. Navigate to the root project directory and build the binaries from the Makefile
 
 2. This will generate the binary file 'bin/k8sFileChurner'
    ```shell
