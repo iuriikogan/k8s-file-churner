@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -14,6 +13,7 @@ import (
 	"time"
 
 	"github.com/iuriikogan/k8s-file-churner/config"
+	_ "go.uber.org/automaxprocs"
 )
 
 func main() {
@@ -23,7 +23,6 @@ func main() {
 		panic(err)
 	} // panic if the directory cannot be created
 
-	runtime.GOMAXPROCS(10) // set the number of threads to run
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal(err.Error())

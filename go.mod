@@ -2,7 +2,10 @@ module github.com/iuriikogan/k8s-file-churner
 
 go 1.20
 
-require github.com/spf13/viper v1.16.0
+require (
+	github.com/spf13/viper v1.16.0
+	go.uber.org/automaxprocs v1.5.2
+)
 
 require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
