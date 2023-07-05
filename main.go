@@ -51,7 +51,7 @@ func main() {
 
 	fmt.Printf("Created %v files of size %vMb\nTook %s\n", numberOfFiles, cfg.SizeOfFileMB, time.Since(start))
 
-	churnInterval := time.Duration(cfg.ChurnIntervalMinutes * 60 * 1000 * 1000 * 1000)
+	churnInterval := time.Duration(cfg.ChurnIntervalMinutes)
 	fmt.Printf("Churn interval: %v\n", churnInterval)
 
 	churnTicker := time.NewTicker(churnInterval)
