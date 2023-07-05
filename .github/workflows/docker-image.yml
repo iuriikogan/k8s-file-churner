@@ -16,4 +16,4 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag iuriikogan/k8sfilechurner:$(date +%s)
     - name: Push the Docker image
-      run: docker buildx --platform linux/amd64 --tag iuriikogan/k8sfilechurner:$(date +%s) --push .
+      run: docker buildx build --platform linux/amd64 --tag iuriikogan/k8sfilechurner:$(date +%s) --push .
