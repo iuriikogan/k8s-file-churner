@@ -3,32 +3,28 @@ package config
 import (
 	"bytes"
 	_ "embed"
-	"strings"
 	"time"
 
 	"github.com/spf13/viper"
 )
 
-// defaultConfiguration is from app-cm.yaml, embedded in the binary
+// defaultConfiguration is from config.yaml, embedded in the binary
 
 //go:embed config.yaml
 var defaultConfiguration []byte
 
 type App struct {
-	SizeOfFileMB         int           `mapstructure:"APP_SIZE_OF_FILES_MB"`
-	SizeOfPVCGB          int           `mapstructure:"APP_SIZE_OF_PVC_GB"`
-	ChurnPercentage      float64       `mapstructure:"APP_CHURN_PERCENTAGE"`
-	ChurnIntervalMinutes time.Duration `mapstructure:"APP_CHURN_PERCENTAGE"`
+	SizeOfFileMB         int           `mapstructure:"SIZE_OF_FILES_MB"`
+	SizeOfPVCGB          int           `mapstructure:"SIZE_OF_PVC_GB"`
+	ChurnPercentage      float64       `mapstructure:"CHURN_PERCENTAGE"`
+	ChurnIntervalMinutes time.Duration `mapstructure:"CHURN_PERCENTAGE"`
 }
 
 type Config struct {
-	App *App
+	App *App `mapstructure:"APP"`
 }
 
 func LoadConfig() (*Config, error) {
-	viper.SetEnvPrefix("APP")
-	viper.AutomaticEnv()
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 
 	// Configuration file
 	viper.SetConfigType("yaml")
@@ -39,7 +35,7 @@ func LoadConfig() (*Config, error) {
 		return nil, err
 	}
 	// merge with the external config file if it exists
-	// viper.MergeInConfig()
+	viper.MergeInConfig()
 
 	// Unmarshal the configuration
 	var config Config

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config
+  APP: |
+    SIZE_OF_FILES_MB: "100"
+    SIZE_OF_PVC_GB: "30"
+    CHURN_PERCENTAGE: "0.2"
+    CHURN_INTERVAL_MINUTES: "5"
