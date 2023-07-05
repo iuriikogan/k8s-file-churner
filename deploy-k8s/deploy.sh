@@ -18,11 +18,10 @@ kind: ConfigMap
 metadata:
   name: config
 data:  
-  APP: |
-    SIZE_OF_FILES_MB: "${SIZE_OF_FILES_MB}"
-    SIZE_OF_PVC_GB: "${SIZE_OF_PVC_GB}"
-    CHURN_PERCENTAGE: "${CHURN_PERCENTAGE}"
-    CHURN_INTERVAL_MINUTES: "${CHURN_INTERVAL_MINUTES}"
+    APP_SIZE_OF_FILES_MB: "${APP_SIZE_OF_FILES_MB}"
+    APP_SIZE_OF_PVC_GB: "${APP_SIZE_OF_PVC_GB}"
+    APP_CHURN_PERCENTAGE: "${APP_CHURN_PERCENTAGE}"
+    APP_CHURN_INTERVAL_MINUTES: "${APP_CHURN_INTERVAL_MINUTES}"
 EOF
 
   # Create the PVCs and deployments for $NUM_PVC_PER_NS
@@ -65,8 +64,6 @@ spec:
           volumeMounts:
             - name: data
               mountPath: app/
-            - name: config
-              mountPath: etc/config/
           resources:
             requests:
               memory: 1Gi
@@ -74,13 +71,13 @@ spec:
             limits:
               memory: 1Gi
               cpu: 1
+          envFrom:
+          - configMapRef:
+              name: config
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: pvc-${NAMESPACE}-${j}
-        - name: config
-          configMap:
-            name: config
 EOF
 
   done
