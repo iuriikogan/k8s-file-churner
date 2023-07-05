@@ -70,7 +70,7 @@ spec:
               cpu: 0.5
             limits:
               memory: 1Gi
-              cpu: 1
+              cpu: 4
           envFrom:
           - configMapRef:
               name: config

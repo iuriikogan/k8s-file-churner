@@ -9,6 +9,7 @@ import (
 
 func TestCreateFile(t *testing.T) {
 	os.Mkdir("tmp", 0755)
+	os.Mkdir("testfiles", 0755)
 	// Create a temporary file for testing
 	file, err := os.CreateTemp("tmp", "testfile")
 	if err != nil {
