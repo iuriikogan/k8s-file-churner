@@ -13,22 +13,18 @@ import (
 //go:embed config.yaml
 var defaultConfiguration []byte
 
-type App struct {
+type Config struct {
 	SizeOfFileMB         int           `mapstructure:"SIZE_OF_FILES_MB"`
 	SizeOfPVCGB          int           `mapstructure:"SIZE_OF_PVC_GB"`
 	ChurnPercentage      float64       `mapstructure:"CHURN_PERCENTAGE"`
 	ChurnIntervalMinutes time.Duration `mapstructure:"CHURN_PERCENTAGE"`
 }
 
-type Config struct {
-	App *App `mapstructure:"APP"`
-}
-
 func LoadConfig() (*Config, error) {
 
 	// Configuration file
 	viper.SetConfigType("yaml")
-	viper.SetConfigName("app-cm")
+	viper.SetConfigName("config")
 	viper.AddConfigPath("/etc/config/")
 	// Read configuration
 	if err := viper.ReadConfig(bytes.NewBuffer(defaultConfiguration)); err != nil {
