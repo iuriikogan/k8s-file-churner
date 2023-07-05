@@ -10,13 +10,10 @@ jobs:
 
   build:
 
-<<<<<<< HEAD
-    runs-on: ubuntu-22.04
-
-=======
     runs-on: ubuntu-20.04
->>>>>>> main
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag iuriikogan/k8sfilechurner:$(date +%s)
+    - name: Push the Docker image
+      run: docker buildx --platform linux/amd64 --tag iuriikogan/k8sfilechurner:$(date +%s) --push .
