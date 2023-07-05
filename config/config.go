@@ -10,8 +10,8 @@ import (
 )
 
 // defaultConfiguration is from app-cm.yaml, embedded in the binary
-//
-//go:embed app-cm.yaml
+
+//go:embed config.yaml
 var defaultConfiguration []byte
 
 type App struct {
@@ -39,7 +39,7 @@ func LoadConfig() (*Config, error) {
 		return nil, err
 	}
 	// merge with the external config file if it exists
-	viper.MergeInConfig()
+	// viper.MergeInConfig()
 
 	// Unmarshal the configuration
 	var config Config
