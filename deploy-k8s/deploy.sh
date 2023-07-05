@@ -9,15 +9,7 @@ do
   NAMESPACE="$NAMESPACE_PREFIX-$i"
   # Create the namespace
   kubectl create namespace $NAMESPACE
-  # Create the configmap shared by all the deployments as mounted volume
-  kubectl -n $NAMESPACE apply -f - <<EOF
-    apiVersion: v1
-    kind: ConfigMap
-    metadata:
-      name: app-cm
-    data:
-
-EOF    
+  kubectl create configmap app-cm --from-file=./../etc/config/app-cm.yaml
   # Create the PVCs and deployments for $NUM_OF_PVC_PER_NS
   for ((j=1; j<=$NUM_PVC_PER_NS; j++)); do
     # Create the PVC for each Deploy 
@@ -58,6 +50,8 @@ EOF
               volumeMounts:
               - name: data
                 mountPath: app/
+              - name: config
+                mountPath: etc/config/
               resources:
                 requests:
                   memory: 1Gi
@@ -65,7 +59,6 @@ EOF
                 limits:  
                   memory: 1Gi
                   cpu: 1
-              command: ["sh"]                
           volumes:
           - name: data
             persistentVolumeClaim:
@@ -73,9 +66,6 @@ EOF
           - name: config
             configMap:
               name: app-cm
-              items:
-              - key: APP_SizeOfFileMB
-                path: app.SizeOfFileMB
 EOF
 done
 
