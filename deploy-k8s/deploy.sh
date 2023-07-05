@@ -9,7 +9,7 @@ do
   NAMESPACE="$NAMESPACE_PREFIX-$i"
   # Create the namespace
   kubectl create namespace $NAMESPACE
-  kubectl create configmap app-cm --from-file=./../etc/config/app-cm.yaml
+  kubectl create configmap -n $NAMESPACE app-cm --from-file=./../etc/config/app-cm.yaml
   # Create the PVCs and deployments for $NUM_OF_PVC_PER_NS
   for ((j=1; j<=$NUM_PVC_PER_NS; j++)); do
     # Create the PVC for each Deploy 
@@ -23,7 +23,7 @@ do
         - ReadWriteOnce
       resources:
         requests:
-          storage: ${APP_PVC_SIZE_GB}
+          storage: $
       storageClassName: ${STORAGE_CLASS}
 EOF
 
