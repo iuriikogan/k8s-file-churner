@@ -79,8 +79,9 @@ spec:
               command:
               - cat
               - /tmp/healthy
-            initialDelaySeconds: 600
-            periodSeconds: 
+            initialDelaySeconds: 60
+            periodSeconds: 60
+            failureThreshold: 5
       volumes:
         - name: data
           persistentVolumeClaim:
