@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	// Create the data directory if it doesn't exist
+	// Create the testfiles directory
 	err := os.MkdirAll("testfiles", 0777)
 	if err != nil {
 		panic(err)
@@ -61,9 +61,9 @@ func main() {
 
 		for {
 			select {
-			case <-churnTicker.C:
+			case <-churnTicker.C: // churn every churnInterval
 				churnFiles(cfg.ChurnPercentage, fileSizeBytes, &wg)
-			case <-time.After(10 * time.Second):
+			case <-time.After(60 * time.Second): // log every 60 seconds
 				log.Println("Waiting to churn files")
 			}
 		}
@@ -94,21 +94,21 @@ func writeRandomData(file *os.File, fileSizeBytes int) {
 	chunks := fileSizeBytes / chunkSize
 
 	for i := 0; i < chunks; i++ {
-		data := make([]byte, chunkSize)
+		data := make([]byte, chunkSize) // create chunks of size 4096 bytes
 		rand.Read(data)
-		file.Write(data)
+		file.Write(data) // write the chunk to the file
 	}
 
-	remainingBytes := fileSizeBytes % chunkSize
+	remainingBytes := fileSizeBytes % chunkSize // calc the remaining bytes and keep looping through the remainder writing a chunk to the file each timen until remainingBytes !>0
 	if remainingBytes > 0 {
-		data := make([]byte, remainingBytes)
+		data := make([]byte, remainingBytes) 
 		rand.Read(data)
 		file.Write(data)
 	}
 }
 
 func churnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) {
-	files, err := os.ReadDir("testfiles/")
+	files, err := os.ReadDir("testfiles/") // read all 
 	if err != nil {
 		unlive()
 		log.Fatal(err)
@@ -150,6 +150,8 @@ func churnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) 
 	}
 }
 
+// TODO helper functionsmove to utils package
+
 func extractFileNumber(fileName string) int {
 	// Extract the numeric part of the file name, assuming the format "testfiles/{number}.txt"
 	numberStr := strings.TrimSuffix(strings.TrimPrefix(fileName, "testfiles/"), ".txt")
@@ -158,7 +160,7 @@ func extractFileNumber(fileName string) int {
 }
 
 func live() {
-	os.WriteFile("tmp/healthy", []byte("ok"), 0664) 
+	os.WriteFile("tmp/healthy", []byte("ok"), 0664)
 }
 
 func unlive() {
