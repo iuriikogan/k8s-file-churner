@@ -79,7 +79,8 @@ spec:
               command:
               - cat
               - /tmp/healthy
-            initialDelaySeconds: 180
+            initialDelaySeconds: 360
+            timeoutSeconds: 60    
             periodSeconds: 60
             failureThreshold: 10
       volumes:
