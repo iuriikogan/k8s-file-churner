@@ -29,7 +29,7 @@ The **k8s-file-churner** is a tool designed to simulate file churn in a Kubernet
 2. Navigate to the created directory
 
    ```shell
-   cd deploy-k8s/
+   cd k8s-file-churner/deploy-k8s/
    ```
 
 3. Set the env variables in setenv.sh
@@ -40,7 +40,7 @@ The **k8s-file-churner** is a tool designed to simulate file churn in a Kubernet
 4. deploy to k8s (**Double check you are in the right context**)
 
    ```shell
-   ./deploy-k8s
+   ./deploy.sh
    ```
 5. delete the test namespaces
  
