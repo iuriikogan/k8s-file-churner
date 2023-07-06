@@ -28,15 +28,14 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	start := time.Now() // start the timer
-	fmt.Printf("Size of each file in Mb: %d\n", cfg.SizeOfFileMB)
-	fmt.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
+	log.Printf("Size of each file in Mb: %d\n", cfg.SizeOfFileMB)
+	log.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
 
 	sizeOfPVCMB := cfg.SizeOfPVCGB * 1023
 	numberOfFiles := (sizeOfPVCMB) / (cfg.SizeOfFileMB) // convert size of PVC to MB to calculate number of files to create
 	fmt.Printf("Number of files to create: %d\n", numberOfFiles)
 
 	fileSizeBytes := int(cfg.SizeOfFileMB * 1024 * 1024) // Convert file size from MB to bytes and convert to int
-	fmt.Printf("Size of each file: %dMb\n", cfg.SizeOfFileMB)
 	var wg sync.WaitGroup
 	wg.Add(numberOfFiles) // increment the wait group counter
 
@@ -101,14 +100,14 @@ func writeRandomData(file *os.File, fileSizeBytes int) {
 
 	remainingBytes := fileSizeBytes % chunkSize // calc the remaining bytes and keep looping through the remainder writing a chunk to the file each timen until remainingBytes !>0
 	if remainingBytes > 0 {
-		data := make([]byte, remainingBytes) 
+		data := make([]byte, remainingBytes)
 		rand.Read(data)
 		file.Write(data)
 	}
 }
 
 func churnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) {
-	files, err := os.ReadDir("testfiles/") // read all 
+	files, err := os.ReadDir("testfiles/") // read all
 	if err != nil {
 		unlive()
 		log.Fatal(err)
