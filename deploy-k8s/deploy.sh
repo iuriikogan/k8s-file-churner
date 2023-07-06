@@ -67,10 +67,10 @@ spec:
           resources:
             requests:
               memory: 1Gi
-              cpu: 0.5
+              cpu: 1
             limits:
-              memory: 1Gi
-              cpu: 4
+              memory: 4Gi
+              cpu: 10
           envFrom:
           - configMapRef:
               name: config
@@ -82,7 +82,7 @@ spec:
             initialDelaySeconds: 600
             timeoutSeconds: 60    
             periodSeconds: 60
-            failureThreshold: 10
+            failureThreshold: 20
       volumes:
         - name: data
           persistentVolumeClaim:
