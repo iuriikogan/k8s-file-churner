@@ -74,15 +74,6 @@ spec:
           envFrom:
           - configMapRef:
               name: config
-          livenessProbe:
-            exec:
-              command:
-              - cat
-              - /tmp/healthy
-            initialDelaySeconds: 600
-            timeoutSeconds: 60    
-            periodSeconds: 60
-            failureThreshold: 20
       volumes:
         - name: data
           persistentVolumeClaim:
