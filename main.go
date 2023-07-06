@@ -31,8 +31,8 @@ func main() {
 	log.Printf("Size of each file in Mb: %d\n", cfg.SizeOfFileMB)
 	log.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
 
-	sizeOfPVCMB := cfg.SizeOfPVCGB * 1023
-	numberOfFiles := (sizeOfPVCMB) / (cfg.SizeOfFileMB) // convert size of PVC to MB to calculate number of files to create
+	sizeOfPVCMB := cfg.SizeOfPVCGB * 1000
+	numberOfFiles := ((sizeOfPVCMB) / (cfg.SizeOfFileMB)) // convert size of PVC to MB to calculate number of files to create
 	log.Printf("Number of files to create: %d\n", numberOfFiles)
 
 	fileSizeBytes := int(cfg.SizeOfFileMB * 1024 * 1024) // Convert file size from MB to bytes and convert to int
