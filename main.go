@@ -33,7 +33,7 @@ func main() {
 
 	sizeOfPVCMB := cfg.SizeOfPVCGB * 1023
 	numberOfFiles := (sizeOfPVCMB) / (cfg.SizeOfFileMB) // convert size of PVC to MB to calculate number of files to create
-	fmt.Printf("Number of files to create: %d\n", numberOfFiles)
+	log.Printf("Number of files to create: %d\n", numberOfFiles)
 
 	fileSizeBytes := int(cfg.SizeOfFileMB * 1024 * 1024) // Convert file size from MB to bytes and convert to int
 	var wg sync.WaitGroup
@@ -49,10 +49,10 @@ func main() {
 
 	live() // set the live probe
 
-	fmt.Printf("Created %v files of size %vMb\nTook %s\n", numberOfFiles, cfg.SizeOfFileMB, time.Since(start))
+	log.Printf("Created %v files of size %vMb\nTook %s\n", numberOfFiles, cfg.SizeOfFileMB, time.Since(start))
 
 	churnInterval := time.Duration(cfg.ChurnIntervalMinutes)
-	fmt.Printf("Churn interval: %v\n", churnInterval)
+	log.Printf("Churn interval: %v\n", churnInterval)
 
 	churnTicker := time.NewTicker(churnInterval)
 	go func() {
