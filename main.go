@@ -48,6 +48,8 @@ func main() {
 	// Wait for all the goroutines to finish
 	wg.Wait()
 
+	live() // set the live probe
+
 	fmt.Printf("Created %v files of size %vMb\nTook %s\n", numberOfFiles, cfg.SizeOfFileMB, time.Since(start))
 
 	churnInterval := time.Duration(cfg.ChurnIntervalMinutes)
@@ -78,6 +80,7 @@ func createFile(fileSizeBytes int, fileIndex int, wg *sync.WaitGroup) {
 	fileName := fmt.Sprintf("testfiles/%d.txt", fileIndex)
 	file, err := os.Create(fileName) // Create the file
 	if err != nil {
+		unlive()
 		log.Printf("Failed to create file '%s': %s\n", fileName, err)
 		return
 	}
@@ -107,6 +110,7 @@ func writeRandomData(file *os.File, fileSizeBytes int) {
 func churnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) {
 	files, err := os.ReadDir("testfiles/")
 	if err != nil {
+		unlive()
 		log.Fatal(err)
 		return
 	}
@@ -114,6 +118,7 @@ func churnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) 
 	numberOfFiles := len(files)
 	numberOfFilesToDelete := int(float64(numberOfFiles) * churnPercentage)
 	if numberOfFilesToDelete == 0 {
+		unlive()
 		log.Println("No files to churn.")
 		return
 	}
@@ -152,12 +157,10 @@ func extractFileNumber(fileName string) int {
 	return fileNum
 }
 
-// func live() {
-// 	os.WriteFile("tmp/healthy", []byte("ok"), 0664) // liveness prob	if err != nil
-// 	panic("unable to set liveness probe")
-// }
+func live() {
+	os.WriteFile("tmp/healthy", []byte("ok"), 0664) 
+}
 
-// func unlive() {
-// 	os.Remove("tmp/healthy") // liveness probe
-// 	panic("unable to unset liveness probe")
-// }
+func unlive() {
+	os.Remove("tmp/healthy")
+}
