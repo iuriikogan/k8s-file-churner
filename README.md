@@ -6,7 +6,7 @@ The **k8s-file-churner** is a tool designed to simulate file churn in a Kubernet
 
 - Creates a specified number of files with random data.
 - Churns a percentage of the files by deleting them and recreating them with new random data.
-- Supports customization of file size, churn percentage, and churn interval through a configuration file.
+- Supports customization of pvc size, file size, churn percentage, and churn interval through a configuration file.
 - Concurrent file creation and churn operations using goroutines.
 - Outputs statistics such as the size of each file, the number of files created, and the time taken for the operation.
 
