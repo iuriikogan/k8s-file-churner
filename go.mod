@@ -3,13 +3,13 @@ module github.com/iuriikogan/k8s-file-churner
 go 1.20
 
 require (
+	github.com/gogits/cron v0.0.0-20171120032916-9f6c956d3e14
 	github.com/spf13/viper v1.16.0
 	go.uber.org/automaxprocs v1.5.2
 )
 
 require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
-	github.com/gogits/cron v0.0.0-20171120032916-9f6c956d3e14 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
