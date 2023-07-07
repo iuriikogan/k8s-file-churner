@@ -31,7 +31,7 @@ EOF
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-${NAMESPACE}-${j}
+  name: ${NAMESPACE}-pvc-${j}
 spec:
   accessModes:
     - ReadWriteOnce
@@ -46,7 +46,7 @@ EOF
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: test-deploy-${NAMESPACE}-${j}
+  name: ${NAMESPACE}-deploy-${j}
 spec:
   replicas: 1
   selector:
@@ -58,7 +58,7 @@ spec:
         app: test
     spec:
       containers:
-        - name: test-pod-${NAMESPACE}-${j}
+        - name: ${NAMESPACE}-pod-${j}
           image: ${IMAGE_NAME}
           imagePullPolicy: Always
           volumeMounts:
@@ -84,7 +84,7 @@ spec:
       volumes:
         - name: data
           persistentVolumeClaim:
-            claimName: pvc-${NAMESPACE}-${j}
+            claimName: ${NAMESPACE}-pvc-${j}
 EOF
 
   done
