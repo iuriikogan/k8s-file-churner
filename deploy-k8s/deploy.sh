@@ -38,7 +38,7 @@ spec:
   resources:
     requests:
       storage: ${APP_SIZE_OF_PVC_GB}Gi
-  storageClassName: ${STORAGE_CLASS}
+  storageClassName: ${STORAGE_CLASS_NAME}
 EOF
 
     # Create the Deployment
