@@ -1,9 +1,9 @@
 package main
 
 import (
-	"crypto/rand"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"sort"
@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gogits/cron"
 	"github.com/iuriikogan/k8s-file-churner/config"
 	_ "go.uber.org/automaxprocs"
 )
@@ -38,7 +39,11 @@ func main() {
 	fileSizeBytes := int(cfg.SizeOfFileMB * 1024 * 1024) // Convert file size from MB to bytes and convert to int
 	var wg sync.WaitGroup
 	wg.Add(numberOfFiles) // increment the wait group counter
-
+	c := cron.New()
+	c.AddFunc("createFilesCron", "@every 1m", func() {
+		log.Println("waiting for files to be created")
+	})
+	c.Start()
 	// Launch a goroutine for each file creation
 	for i := 0; i < numberOfFiles; i++ {
 		go createFile(fileSizeBytes, i, &wg)
@@ -46,6 +51,7 @@ func main() {
 
 	// Wait for all the goroutines to finish
 	wg.Wait()
+	c.Stop() // stop the log cron
 
 	live() // set the live probe
 
@@ -89,15 +95,14 @@ func createFile(fileSizeBytes int, fileIndex int, wg *sync.WaitGroup) {
 }
 
 func writeRandomData(file *os.File, fileSizeBytes int) {
+	rand.Seed(time.Now().UnixNano()) // seed the random number generator
 	chunkSize := 4096
 	chunks := fileSizeBytes / chunkSize
-
 	for i := 0; i < chunks; i++ {
 		data := make([]byte, chunkSize) // create chunks of size 4096 bytes
 		rand.Read(data)
 		file.Write(data) // write the chunk to the file
 	}
-
 	remainingBytes := fileSizeBytes % chunkSize // calc the remaining bytes and keep looping through the remainder writing a chunk to the file each timen until remainingBytes !>0
 	if remainingBytes > 0 {
 		data := make([]byte, remainingBytes)
@@ -145,7 +150,7 @@ func churnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) 
 	// Create the same number of files that were deleted in the sorted order
 	for i := 0; i < numberOfFilesToDelete; i++ {
 		log.Printf("Creating file testfiles/%d.txt\n", i)
-		go createFile(fileSizeBytes, i, wg)
+		go createFile(fileSizeBytes, i, wg) //create files calls wg.done each
 	}
 }
 
