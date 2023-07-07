@@ -18,8 +18,8 @@ import (
 )
 
 func main() {
-	// Create the testfiles directory
-	err := os.MkdirAll("testfiles", 0777)
+	// Create the app/testfiles directory
+	err := os.MkdirAll("app/testfiles", 0777)
 	if err != nil {
 		panic(err)
 	} // panic if the directory cannot be created
@@ -82,7 +82,7 @@ func createFile(fileSizeBytes int, fileIndex int, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	// Generate a file name
-	fileName := fmt.Sprintf("testfiles/%d.txt", fileIndex)
+	fileName := fmt.Sprintf("app/testfiles/%d.txt", fileIndex)
 	file, err := os.Create(fileName) // Create the file
 	if err != nil {
 		unlive()
@@ -112,7 +112,7 @@ func writeRandomData(file *os.File, fileSizeBytes int) {
 }
 
 func churnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) {
-	files, err := os.ReadDir("testfiles/") // read all
+	files, err := os.ReadDir("app/testfiles/") // read all
 	if err != nil {
 		unlive()
 		log.Fatal(err)
@@ -136,7 +136,7 @@ func churnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) 
 	// Delete the first numFilesToDelete files if they start with "test" and are not directories
 	for i := 0; i < numberOfFilesToDelete; i++ {
 		file := files[i]
-		filePath := filepath.Join("testfiles", file.Name())
+		filePath := filepath.Join("app/testfiles", file.Name())
 		err := os.Remove(filePath)
 		if err != nil {
 			log.Printf("Failed to delete file '%s': %s\n", filePath, err)
@@ -149,7 +149,7 @@ func churnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) 
 
 	// Create the same number of files that were deleted in the sorted order
 	for i := 0; i < numberOfFilesToDelete; i++ {
-		log.Printf("Creating file testfiles/%d.txt\n", i)
+		log.Printf("Creating file app/testfiles/%d.txt\n", i)
 		go createFile(fileSizeBytes, i, wg) //create files calls wg.done each
 	}
 }
@@ -157,8 +157,8 @@ func churnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) 
 // TODO helper functionsmove to utils package
 
 func extractFileNumber(fileName string) int {
-	// Extract the numeric part of the file name, assuming the format "testfiles/{number}.txt"
-	numberStr := strings.TrimSuffix(strings.TrimPrefix(fileName, "testfiles/"), ".txt")
+	// Extract the numeric part of the file name, assuming the format "app/testfiles/{number}.txt"
+	numberStr := strings.TrimSuffix(strings.TrimPrefix(fileName, "app/testfiles/"), ".txt")
 	fileNum, _ := strconv.Atoi(numberStr)
 	return fileNum
 }
