@@ -29,6 +29,9 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	start := time.Now() // start the timer
+
+	fmt.Printf("************************************\nK8s File Churner was made by Iurii Kogan - koganiurii@gmail.com feel free to reach out!\n************************************\n")
+
 	log.Printf("Size of each file in Mb: %d\n", cfg.SizeOfFileMB)
 	log.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
 
