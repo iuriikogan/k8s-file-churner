@@ -51,7 +51,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
+      storage: 1Gi
   storageClassName: default
 EOF
     # Create the Deployment
@@ -75,18 +75,18 @@ spec:
           image: ${IMAGE_NAME}
           imagePullPolicy: Always
           volumeMounts:
-            - name: data
-              mountPath: app/
+          - name: data
+            mountPath: app/
           volumeMounts:
           - name: log
             mountPath: /var/log
           resources:
             requests:
               memory: 1Gi
-              cpu: 1
+              cpu: 50
             limits:
               memory: 4Gi
-              cpu: 10
+              cpu: 100
           envFrom:
           - configMapRef:
               name: config
