@@ -40,7 +40,20 @@ spec:
       storage: ${APP_SIZE_OF_PVC_GB}Gi
   storageClassName: ${STORAGE_CLASS_NAME}
 EOF
-
+    # Create the PVC to persist the logs for each deployment
+    kubectl -n $NAMESPACE apply -f - <<EOF
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ${NAMESPACE}-logs-${j}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: default
+EOF
     # Create the Deployment
     kubectl -n $NAMESPACE apply -f - <<EOF
 apiVersion: apps/v1
@@ -64,6 +77,9 @@ spec:
           volumeMounts:
             - name: data
               mountPath: app/
+          volumeMounts:
+          - name: log
+            mountPath: /var/log
           resources:
             requests:
               memory: 1Gi
@@ -85,6 +101,9 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: ${NAMESPACE}-pvc-${j}
+        - name: log
+          persistentVolumeClaim:
+            claimName: ${NAMESPACE}-logs-${j}
 EOF
 
   done

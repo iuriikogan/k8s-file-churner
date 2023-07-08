@@ -19,17 +19,23 @@ import (
 
 func main() {
 	fmt.Printf("************************************\nK8s File Churner was made by Iurii Kogan - koganiurii@gmail.com feel free to reach out!\n************************************\n")
-	// Create the app/testfiles directory
-	err := os.MkdirAll("app/testfiles", 0777)
+	start := time.Now()
+	// log to custom file
+	logFile, err := os.OpenFile("var/log/k8sfilechurner.log", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0644)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
+	log.SetOutput(logFile)
+
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	start := time.Now() // start the timer
-
+	// Create the app/testfiles directory
+	err = os.MkdirAll("app/testfiles", 0755)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 	log.Printf("Size of each file in Mb: %d\n", cfg.SizeOfFileMB)
 	log.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
 

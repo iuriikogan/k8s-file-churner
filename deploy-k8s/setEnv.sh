@@ -1,5 +1,5 @@
 export NUM_NAMESPACES=1
-export NAMESPACE_PREFIX="new-test"
+export NAMESPACE_PREFIX="test"
 export STORAGE_CLASS_NAME="managed-premium" # only RWO Storage classes
 export NUM_PVC_PER_NS=3
 export IMAGE_NAME="iuriikogan/k8sfilechurner:v1"
