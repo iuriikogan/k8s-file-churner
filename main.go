@@ -18,7 +18,6 @@ import (
 )
 
 func main() {
-	fmt.Printf("************************************\nK8s File Churner was made by Iurii Kogan - koganiurii@gmail.com feel free to reach out!\n************************************\n")
 	start := time.Now()
 	// log to custom file
 	logFile, err := os.OpenFile("var/log/k8sfilechurner.log", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0644)
@@ -36,13 +35,19 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	fmt.Printf("************************************\nK8s File Churner was made by Iurii Kogan - koganiurii@gmail.com feel free to reach out!\n************************************\n")
+	fmt.Println("Starting K8s File Churner...\nAll testfiles will be written at app/testfiles\n All logs will be written to var/log/k8sfilechurner.log")
+
+	fmt.Printf("Size of each file in Mb: %d\n", cfg.SizeOfFileMB)
+	fmt.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
+
 	log.Printf("Size of each file in Mb: %d\n", cfg.SizeOfFileMB)
 	log.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
 
 	sizeOfPVCMB := cfg.SizeOfPVCGB * 1000
 	numberOfFiles := ((sizeOfPVCMB) / (cfg.SizeOfFileMB)) // convert size of PVC to MB to calculate number of files to create
 	log.Printf("Number of files to create: %d\n", numberOfFiles)
-
+  fmt.Printf("Number of files to create: %d\n", numberOfFiles)
 	fileSizeBytes := int(cfg.SizeOfFileMB * 1024 * 1024) // Convert file size from MB to bytes and convert to int
 	var wg sync.WaitGroup
 	wg.Add(numberOfFiles) // increment the wait group counter
