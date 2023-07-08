@@ -2,6 +2,8 @@
 
 The **k8s-file-churner** is a tool designed to simulate file churn in a Kubernetes environment. It creates and churns a specified number of files within a directory, allowing you to test the behavior of your backup and storage systems or applications that interact with the files.
 
+Image info can be found here: https://hub.docker.com/repository/docker/iuriikogan/k8sfilechurner/
+
 ![image](https://github.com/iuriikogan/k8s-file-churner/assets/47596530/76742aa7-5e4b-451c-8105-f669af983065)
 
 
@@ -72,6 +74,7 @@ The **k8s-file-churner** is a tool designed to simulate file churn in a Kubernet
    ```shell
    make clean
    ```
+
 ## Contact Me!
 I'm always interested in collaborating and I'd love to hear your feedback!! - koganiurii@gmail.com
 
