@@ -23,8 +23,7 @@ func main() {
 	err := os.MkdirAll("app/testfiles", 0777)
 	if err != nil {
 		panic(err)
-	} // panic if the directory cannot be created
-
+	}
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal(err.Error())
@@ -59,10 +58,10 @@ func main() {
 
 	log.Printf("Created %v files of size %vMb\nTook %s\n", numberOfFiles, cfg.SizeOfFileMB, time.Since(start))
 
-	churnInterval := time.Duration(cfg.ChurnIntervalMinutes)
+	churnInterval := time.Duration(cfg.ChurnIntervalMinutes) // typecast ChurnIntervalMinutes to time.Duration
 	log.Printf("Churn interval: %v\n", churnInterval)
 
-	churnTicker := time.NewTicker(churnInterval)
+	churnTicker := time.NewTicker(churnInterval) // create a ticker to churn files every churnInterval
 	go func() {
 		log.Printf("Churning %v percent of files every %v", (cfg.ChurnPercentage * 100), churnInterval)
 
@@ -96,6 +95,7 @@ func createFile(fileSizeBytes int, fileIndex int, wg *sync.WaitGroup) {
 	writeRandomData(file, fileSizeBytes)
 }
 
+// using math/rand instead of crypto/rand for performance reasons
 func writeRandomData(file *os.File, fileSizeBytes int) {
 	rand.Seed(time.Now().UnixNano()) // seed the random number generator
 	chunkSize := 4096
