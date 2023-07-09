@@ -44,7 +44,7 @@ func main() {
 	log.Printf("Size of each file in Mb: %d\n", cfg.SizeOfFileMB)
 	log.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
 
-	sizeOfPVCMB := int(cfg.SizeOfPVCGB * 999)    		 // convert size of PVC to MB
+	sizeOfPVCMB := int(cfg.SizeOfPVCGB * 999)             // convert size of PVC to MB
 	numberOfFiles := ((sizeOfPVCMB) / (cfg.SizeOfFileMB)) // convert size of PVC to MB to calculate number of files to create
 	log.Printf("Number of files to create: %d\n", numberOfFiles)
 	fmt.Printf("Number of files to create: %d\n", numberOfFiles)
@@ -83,7 +83,7 @@ func main() {
 				churnFiles(cfg.ChurnPercentage, fileSizeBytes, &wg)
 			case <-time.After(60 * time.Second): // log every 60 seconds
 				log.Println("Waiting to churn files")
-				fmt.Printf("Waiting to churn files\n")
+				fmt.Printf("Waiting to churn files")
 			}
 		}
 	}()
