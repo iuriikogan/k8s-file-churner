@@ -35,8 +35,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	fmt.Printf("************************************\nK8s File Churner was made by Iurii Kogan - koganiurii@gmail.com feel free to reach out!\n************************************\n")
-	fmt.Println("Starting K8s File Churner...\nAll testfiles will be written at app/testfiles\n All logs will be written to var/log/k8sfilechurner.log")
+	fmt.Printf("************************************\nK8s File Churner was made by Iurii Kogan - koganiurii@gmail.com \n************************************\n")
+	fmt.Println("Starting K8s File Churner...\nAll testfiles will be written to app/testfiles\nAll logs will be written to var/log/k8sfilechurner.log")
 
 	fmt.Printf("Size of each file in Mb: %d\n", cfg.SizeOfFileMB)
 	fmt.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
@@ -44,23 +44,23 @@ func main() {
 	log.Printf("Size of each file in Mb: %d\n", cfg.SizeOfFileMB)
 	log.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
 
-	sizeOfPVCMB := cfg.SizeOfPVCGB * 1000
+	sizeOfPVCMB := int(cfg.SizeOfPVCGB * 999)    		 // convert size of PVC to MB
 	numberOfFiles := ((sizeOfPVCMB) / (cfg.SizeOfFileMB)) // convert size of PVC to MB to calculate number of files to create
 	log.Printf("Number of files to create: %d\n", numberOfFiles)
-  fmt.Printf("Number of files to create: %d\n", numberOfFiles)
+	fmt.Printf("Number of files to create: %d\n", numberOfFiles)
 	fileSizeBytes := int(cfg.SizeOfFileMB * 1024 * 1024) // Convert file size from MB to bytes and convert to int
 	var wg sync.WaitGroup
-	wg.Add(numberOfFiles) // increment the wait group counter
-	c := cron.New()
+	wg.Add(numberOfFiles) // increment the wait group counter to numberoffiles to be created
+	c := cron.New()       // create a new cron to log every 1 minute to ensure go routines are still running
 	c.AddFunc("createFilesCron", "@every 1m", func() {
 		log.Println("waiting for files to be created")
+		fmt.Println("waiting for files to be created")
 	})
 	c.Start()
 	// Launch a goroutine for each file creation
 	for i := 0; i < numberOfFiles; i++ {
 		go createFile(fileSizeBytes, i, &wg)
 	}
-
 	// Wait for all the goroutines to finish
 	wg.Wait()
 	c.Stop() // stop the log cron
@@ -68,13 +68,14 @@ func main() {
 	live() // set the live probe
 
 	log.Printf("Created %v files of size %vMb\nTook %s\n", numberOfFiles, cfg.SizeOfFileMB, time.Since(start))
+	fmt.Printf("Created %v files of size %vMb\nTook %s\n", numberOfFiles, cfg.SizeOfFileMB, time.Since(start))
 
 	churnInterval := time.Duration(cfg.ChurnIntervalMinutes) // typecast ChurnIntervalMinutes to time.Duration
-	log.Printf("Churn interval: %v\n", churnInterval)
 
 	churnTicker := time.NewTicker(churnInterval) // create a ticker to churn files every churnInterval
 	go func() {
 		log.Printf("Churning %v percent of files every %v", (cfg.ChurnPercentage * 100), churnInterval)
+		fmt.Printf("Churning %v percent of files every %v", (cfg.ChurnPercentage * 100), churnInterval)
 
 		for {
 			select {
@@ -82,6 +83,7 @@ func main() {
 				churnFiles(cfg.ChurnPercentage, fileSizeBytes, &wg)
 			case <-time.After(60 * time.Second): // log every 60 seconds
 				log.Println("Waiting to churn files")
+				fmt.Printf("Waiting to churn files\n")
 			}
 		}
 	}()
@@ -156,6 +158,7 @@ func churnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) 
 			continue
 		}
 		log.Printf("Deleted file '%s'\n", filePath)
+		fmt.Printf("Deleted file '%s'\n", filePath)
 	}
 
 	wg.Add(numberOfFilesToDelete) // increment the wait group counter
@@ -163,6 +166,7 @@ func churnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) 
 	// Create the same number of files that were deleted in the sorted order
 	for i := 0; i < numberOfFilesToDelete; i++ {
 		log.Printf("Creating file app/testfiles/%d.txt\n", i)
+		fmt.Printf("Creating file app/testfiles/%d.txt\n", i)
 		go createFile(fileSizeBytes, i, wg) //create files calls wg.done each
 	}
 }
