@@ -51,7 +51,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
+      storage: 500Mi
   storageClassName: default
 EOF
     # Create the Deployment
