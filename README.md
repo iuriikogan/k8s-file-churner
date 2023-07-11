@@ -6,11 +6,13 @@ Image info can be found here: https://hub.docker.com/repository/docker/iuriikoga
 
 ![image](https://github.com/iuriikogan/k8s-file-churner/assets/47596530/76742aa7-5e4b-451c-8105-f669af983065)
 
+The deploy-k8s directory includes several scripts to deploy K8s file churner allowing you to specify the number of namespaces, namespace prefix, number of PVCs per namespace, Storage Class and pass env variables via a configmap to the k8sFileChurner app, PVC Size, Size of Files to generate to fill the PVC, the churn rate and churn interval.
+
 
 ## Features
 
 - Creates a specified number of files with random data.
-- Churns a percentage of the files by deleting them and recreating them with new random data.
+- Churns a percentages of the files by deleting them and recreating them with new random data.
 - Supports customization of pvc size, file size, churn percentage, and churn interval through a configuration file.
 - Concurrent file creation and churn operations using goroutines.
 - Outputs statistics such as the size of each file, the number of files created, and the time taken for the operation.
