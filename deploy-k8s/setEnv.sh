@@ -1,7 +1,7 @@
 export NUM_NAMESPACES=1
 export NAMESPACE_PREFIX="test"
 export STORAGE_CLASS_NAME="managed-premium" # only RWO Storage classes
-export NUM_PVC_PER_NS=1
+export NUM_PVC_PER_NS=2
 export IMAGE_NAME="iuriikogan/k8sfilechurner:v1"
 export APP_SIZE_OF_PVC_GB=10
 export APP_SIZE_OF_FILES_MB=100
