@@ -91,7 +91,7 @@ func createFile(fileSizeBytes int, fileIndex int, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	// Generate a file name
-	fileName := fmt.Sprintf("app/testfiles/%d.txt", fileIndex)
+	fileName := fmt.Sprintf("app/testfiles/%d.bin", fileIndex)
 	file, err := os.Create(fileName) // Create the file
 	if err != nil {
 		unlive()
