@@ -158,7 +158,7 @@ func churnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) 
 
 	// Create the same number of files that were deleted in the sorted order
 	for i := 0; i < numberOfFilesToDelete; i++ {
-		log.Printf("Creating file app/testfiles/%d.txt\n", i)
+		log.Printf("Creating file app/testfiles/%d.bin\n", i)
 		go createFile(fileSizeBytes, i, wg) //create files calls wg.done each
 	}
 }
@@ -166,8 +166,8 @@ func churnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) 
 // TODO helper functionsmove to utils package
 
 func extractFileNumber(fileName string) int {
-	// Extract the numeric part of the file name, assuming the format "app/testfiles/{number}.txt"
-	numberStr := strings.TrimSuffix(strings.TrimPrefix(fileName, "app/testfiles/"), ".txt")
+	// Extract the numeric part of the file name, assuming the format "app/testfiles/{number}.bin"
+	numberStr := strings.TrimSuffix(strings.TrimPrefix(fileName, "app/testfiles/"), ".bin")
 	fileNum, _ := strconv.Atoi(numberStr)
 	return fileNum
 }
