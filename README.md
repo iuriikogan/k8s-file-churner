@@ -13,7 +13,7 @@ The deploy-k8s directory includes several scripts to deploy K8s file churner all
 
 - Creates a specified number of files with random data.
 - Churns a percentages of the files by deleting them and recreating them with new random data.
-- Supports customization of pvc size, file size, churn percentage, and churn interval through a configuration file.
+- Supports customization of pvc size, file size, churn percentage, and churn interval through a configmap.
 - Concurrent file creation and churn operations using goroutines.
 - Outputs statistics such as the size of each file, the number of files created, and the time taken for the operation.
 
