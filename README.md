@@ -24,7 +24,7 @@ The deploy-k8s directory includes several scripts to deploy K8s file churner all
 
 ## Limitations
 
-- Currently only RWO storage classes are supported
+- Currently only RWO storage classes are supported by the deploy.sh script
 
 ## Getting Started
 
