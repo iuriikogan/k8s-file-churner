@@ -8,7 +8,7 @@ import (
 
 func TestCreateFile(t *testing.T) {
 	os.Mkdir("app/", 0755)
-	os.Mkdir("app/testfiles", 0755)
+	os.Mkdir("app/testfiles/", 0755)
 	// Create a temporary file for testing
 	file, err := os.CreateTemp("app/testfiles", "*.bin")
 	if err != nil {
@@ -23,7 +23,7 @@ func TestCreateFile(t *testing.T) {
 	wg.Add(1)
 
 	// Call the createFile function
-	createFile(1024, 0, &wg)
+	createFile((1024 * 1024), 0, &wg)
 
 	// Wait for the goroutine to finish
 	wg.Wait()
@@ -32,8 +32,11 @@ func TestCreateFile(t *testing.T) {
 	if _, err := os.Stat(file.Name()); os.IsNotExist(err) {
 		t.Errorf("Expected file to be created, but it doesn't exist")
 	}
+	cleanUpFiles()
 }
 func TestWriteRandomData(t *testing.T) {
+	os.Mkdir("app/", 0755)
+	os.Mkdir("app/testfiles/", 0755)
 	// Create a temporary file for testing
 	file, err := os.CreateTemp("app/testfiles/", "*.bin")
 	if err != nil {
@@ -42,7 +45,7 @@ func TestWriteRandomData(t *testing.T) {
 	defer os.Remove(file.Name())
 
 	// Call the writeRandomData function
-	writeRandomData(file, 1024)
+	writeRandomData(file, (1024 * 1024))
 
 	// Check if the file size matches the expected size
 	fileInfo, err := file.Stat()
@@ -50,13 +53,16 @@ func TestWriteRandomData(t *testing.T) {
 		t.Fatalf("Failed to get file info: %v", err)
 	}
 	fileSize := fileInfo.Size()
-	expectedSize := int64(1024)
+	expectedSize := int64((1024 * 1024))
 	if fileSize != expectedSize {
 		t.Errorf("Expected file size %d, but got %d", expectedSize, fileSize)
 	}
+	cleanUpFiles()
 }
 
 func TestChurnFiles(t *testing.T) {
+	os.Mkdir("app/", 0755)
+	os.Mkdir("app/testfiles/", 0755)
 	// Create some test files in the directory
 	for i := 0; i < 5; i++ {
 		file, err := os.CreateTemp("app/testfiles/", "*.bin")
@@ -74,7 +80,7 @@ func TestChurnFiles(t *testing.T) {
 	// Create a wait group
 	var wg sync.WaitGroup
 	// Call the churnFiles function
-	churnFiles(0.2, 1024, &wg)
+	churnFiles(0.2, (1024 * 1024), &wg)
 	// Wait for the goroutines to finish
 	wg.Wait()
 	// Get the number of files after the churn operation
@@ -89,4 +95,9 @@ func TestChurnFiles(t *testing.T) {
 	if updatedFileCount != expectedFiles {
 		t.Errorf("Expected %d files, but got %d", expectedFiles, updatedFileCount)
 	}
+	cleanUpFiles()
+}
+
+func cleanUpFiles() {
+	os.RemoveAll("app/")
 }

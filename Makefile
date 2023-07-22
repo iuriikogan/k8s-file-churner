@@ -12,6 +12,10 @@ test:
 
 	go test ./... -v --count=1
 
+bench:
+
+	go test ./... -bench=. -benchmem -v
+
 clean:
 
 	rm -f ./bin/$(BINARY_NAME)

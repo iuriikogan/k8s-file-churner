@@ -103,7 +103,6 @@ func createFile(fileSizeBytes int, fileIndex int, wg *sync.WaitGroup) {
 	writeRandomData(file, fileSizeBytes)
 }
 
-// using math/rand instead of crypto/rand for performance reasons
 func writeRandomData(file *os.File, fileSizeBytes int) {
 	chunkSize := 4096
 	chunks := fileSizeBytes / chunkSize
