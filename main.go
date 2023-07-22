@@ -32,8 +32,11 @@ func main() {
 	log.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
 	log.Printf("Churn percentage: %v\n", (cfg.ChurnPercentage * 100))
 	log.Printf("Churn interval in minutes: %d\n", cfg.ChurnIntervalMinutes)
-
-	//calculate number of files to create
+	//
+	//
+	// calculate number of files to create
+	//
+	//
 	sizeOfPVCMB := int(cfg.SizeOfPVCGB * 999)             // convert size of PVC to MB
 	numberOfFiles := ((sizeOfPVCMB) / (cfg.SizeOfFileMB)) // convert size of PVC to MB to calculate number of files to create
 	log.Printf("Number of files to create: %d\n", numberOfFiles)
