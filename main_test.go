@@ -4,49 +4,49 @@ import (
 	"os"
 	"sync"
 	"testing"
+
+	"github.com/iuriikogan/k8s-file-churner/utils"
 )
 
-func TestCreateFile(t *testing.T) {
+// func TestCreateFile(t *testing.T) {
+// 	os.Mkdir("app/", 0755)
+// 	os.Mkdir("app/testfiles/", 0755)
+// 	// Create a temporary file for testing
+// 	file, err := os.CreateTemp("app/testfiles", "*.bin")
+// 	if err != nil {
+// 		t.Fatalf("Failed to create temporary file: %v", err)
+// 	}
+// 	defer os.Remove(file.Name())
+
+// 	// Create a wait group
+// 	var wg sync.WaitGroup
+
+// 	// Add 1 to the wait group counter
+// 	wg.Add(1)
+
+// 	// Call the createFile function
+// 	utils.CreateFile((1024 * 1024), 0, &wg)
+
+// 	// Wait for the goroutine to finish
+// 	wg.Wait()
+
+//		// Check if the file exists
+//		if _, err := os.Stat(file.Name()); os.IsNotExist(err) {
+//			t.Errorf("Expected file to be created, but it doesn't exist")
+//		}
+//		cleanUpFiles()
+//	}
+func TestCreateFileWithRandomData(t *testing.T) {
 	os.Mkdir("app/", 0755)
 	os.Mkdir("app/testfiles/", 0755)
-	// Create a temporary file for testing
-	file, err := os.CreateTemp("app/testfiles", "*.bin")
-	if err != nil {
-		t.Fatalf("Failed to create temporary file: %v", err)
-	}
-	defer os.Remove(file.Name())
-
-	// Create a wait group
-	var wg sync.WaitGroup
-
-	// Add 1 to the wait group counter
+	wg := sync.WaitGroup{}
 	wg.Add(1)
-
-	// Call the createFile function
-	createFile((1024 * 1024), 0, &wg)
-
-	// Wait for the goroutine to finish
-	wg.Wait()
-
-	// Check if the file exists
-	if _, err := os.Stat(file.Name()); os.IsNotExist(err) {
-		t.Errorf("Expected file to be created, but it doesn't exist")
-	}
-	cleanUpFiles()
-}
-func TestWriteRandomData(t *testing.T) {
-	os.Mkdir("app/", 0755)
-	os.Mkdir("app/testfiles/", 0755)
-	// Create a temporary file for testing
-	file, err := os.CreateTemp("app/testfiles/", "*.bin")
-	if err != nil {
-		t.Fatalf("Failed to create temporary file: %v", err)
-	}
-	defer os.Remove(file.Name())
-
 	// Call the writeRandomData function
-	writeRandomData(file, (1024 * 1024))
-
+	utils.CreateFileWithRandomData((1024 * 1024), 1, &wg)
+	file, err := os.OpenFile("app/testfiles/1.bin", os.O_RDONLY, 0644)
+	if err != nil {
+		t.Fatalf("Failed to open file: %v", err)
+	}
 	// Check if the file size matches the expected size
 	fileInfo, err := file.Stat()
 	if err != nil {
@@ -80,7 +80,7 @@ func TestChurnFiles(t *testing.T) {
 	// Create a wait group
 	var wg sync.WaitGroup
 	// Call the churnFiles function
-	churnFiles(0.2, (1024 * 1024), &wg)
+	utils.ChurnFiles(0.2, (1024 * 1024), &wg)
 	// Wait for the goroutines to finish
 	wg.Wait()
 	// Get the number of files after the churn operation
