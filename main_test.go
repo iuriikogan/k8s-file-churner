@@ -2,16 +2,15 @@ package main
 
 import (
 	"os"
-	"strconv"
 	"sync"
 	"testing"
 )
 
 func TestCreateFile(t *testing.T) {
-	os.Mkdir("tmp", 0755)
-	os.Mkdir("testfiles", 0755)
+	os.Mkdir("app/", 0755)
+	os.Mkdir("app/testfiles", 0755)
 	// Create a temporary file for testing
-	file, err := os.CreateTemp("tmp", "testfile")
+	file, err := os.CreateTemp("app/testfiles", "*.bin")
 	if err != nil {
 		t.Fatalf("Failed to create temporary file: %v", err)
 	}
@@ -36,7 +35,7 @@ func TestCreateFile(t *testing.T) {
 }
 func TestWriteRandomData(t *testing.T) {
 	// Create a temporary file for testing
-	file, err := os.CreateTemp("testfiles", "testfile")
+	file, err := os.CreateTemp("app/testfiles/", "*.bin")
 	if err != nil {
 		t.Fatalf("Failed to create temporary file: %v", err)
 	}
@@ -60,14 +59,14 @@ func TestWriteRandomData(t *testing.T) {
 func TestChurnFiles(t *testing.T) {
 	// Create some test files in the directory
 	for i := 0; i < 5; i++ {
-		file, err := os.CreateTemp("testfiles", strconv.Itoa(i))
+		file, err := os.CreateTemp("app/testfiles/", "*.bin")
 		if err != nil {
 			t.Fatalf("Failed to create temporary file: %v", err)
 		}
 		defer file.Close()
 	}
 	// Get the initial number of files
-	initialFiles, err := os.ReadDir("testfiles")
+	initialFiles, err := os.ReadDir("app/testfiles/")
 	if err != nil {
 		t.Fatalf("Failed to read directory: %v", err)
 	}
@@ -79,7 +78,7 @@ func TestChurnFiles(t *testing.T) {
 	// Wait for the goroutines to finish
 	wg.Wait()
 	// Get the number of files after the churn operation
-	updatedFiles, err := os.ReadDir("testfiles")
+	updatedFiles, err := os.ReadDir("app/testfiles/")
 	if err != nil {
 		t.Fatalf("Failed to read directory: %v", err)
 	}
