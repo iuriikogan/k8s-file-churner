@@ -34,7 +34,7 @@ metadata:
   name: ${NAMESPACE}-pvc-${j}
 spec:
   accessModes:
-    - ReadWriteOnce
+  - ReadWriteOnce
   resources:
     requests:
       storage: ${APP_SIZE_OF_PVC_GB}Gi

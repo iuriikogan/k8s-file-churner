@@ -1,3 +1,5 @@
 vendor/
 data/
 *.env
+/app
+/bin
