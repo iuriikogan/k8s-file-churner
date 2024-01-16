@@ -1,4 +1,4 @@
-#!/bin/bash
+#Dockerfile
 FROM golang:1.19-bookworm As Builder
 WORKDIR /app
 COPY go.* ./
