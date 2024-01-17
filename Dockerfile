@@ -15,7 +15,7 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
     --mount=type=bind,target=. \
     CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags="-s -w" -o /bin/k8sFileChurner main.go
 
-FROM alpine:3.17.2 As Final
+FROM alpine:3.18.5 As Final
 
 ARG UID=10001
 RUN adduser \
