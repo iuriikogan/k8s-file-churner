@@ -24,4 +24,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: iuriikogan/k8sfilechurner:$(date +%s)
+          tags: iuriikogan/k8sfilechurner
