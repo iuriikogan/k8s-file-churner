@@ -3,8 +3,6 @@ FROM golang:1.21-alpine As Builder
 
 WORKDIR /app
 
-COPY go.* ./
-
 RUN --mount=type=bind,source=go.sum,target=go.sum \
     --mount=type=bind,source=go.mod,target=go.mod \
     go mod download -x
