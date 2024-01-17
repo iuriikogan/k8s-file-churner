@@ -5,9 +5,9 @@ WORKDIR /app
 
 COPY go.* ./
 
-RUN go mod download -x
-
-COPY . ./
+RUN --mount=type=bind,source=go.sum,target=go.sum \
+    --mount=type=bind,source=go.mod,target=go.mod \
+    go mod download -x
 
 ARG TARGETOS TARGETARCH
 
