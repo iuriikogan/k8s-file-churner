@@ -33,7 +33,6 @@ func main() {
 	//
 	log.Printf("Churn interval in minutes: %d\n", printChurnInterval)
 	// log stuff
-	log.Printf("************************************\nK8s File Churner was made by Iurii Kogan - koganiurii@gmail.com \n************************************\n")
 	log.Println("Starting K8s File Churner...\nAll testfiles will be written to app/testfiles directory")
 	log.Printf("Size of each file in Mb: %d\n", cfg.SizeOfFileMB)
 	log.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
