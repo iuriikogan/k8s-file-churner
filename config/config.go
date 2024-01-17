@@ -4,7 +4,6 @@ import (
 	"bytes"
 	_ "embed"
 	"time"
-
 	"github.com/spf13/viper"
 )
 

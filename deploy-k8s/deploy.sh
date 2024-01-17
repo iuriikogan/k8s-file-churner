@@ -24,6 +24,7 @@ data:
     APP_CHURN_INTERVAL_MINUTES: "${APP_CHURN_INTERVAL_MINUTES}"
 EOF
 
+
   # Create the PVCs and deployments for $NUM_PVC_PER_NS
   for ((j=1; j<=$NUM_PVC_PER_NS; j++)); do
     # Create the PVC for each Deployment
