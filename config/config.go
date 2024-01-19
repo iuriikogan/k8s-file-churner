@@ -4,6 +4,7 @@ import (
 	"bytes"
 	_ "embed"
 	"time"
+
 	"github.com/spf13/viper"
 )
 
@@ -21,6 +22,11 @@ type Config struct {
 
 func LoadConfig() (*Config, error) {
 	v := viper.New()
+
+	v.SetDefault("APP_SIZE_OF_FILES_MB", 10)
+	v.SetDefault("APP_SIZE_OF_PVC_GB", 1)
+	v.SetDefault("APP_CHURN_PERCENTAGE", 0.2)
+	v.SetDefault("APP_CHURN_INTERVAL_MINUTES", "2m")
 
 	// Read configuration from environment variables
 	v.AutomaticEnv()

@@ -29,7 +29,7 @@ func main() {
 	//
 	// typecast ChurnIntervalMinutes to time.Duration
 	//
-	printChurnInterval := time.Duration.Minutes(cfg.ChurnIntervalMinutes)
+	printChurnInterval := time.Duration(cfg.ChurnIntervalMinutes) * time.Minute
 	//
 	log.Printf("Churn interval in minutes: %d\n", printChurnInterval)
 	// log stuff
