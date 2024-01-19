@@ -3,15 +3,16 @@ name: Docker Image CI
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: 
+      - "main" 
+    tags:
+      - "v*"
   pull_request:
-    branches: [ "main" ]
 
 jobs:
-
+  
   build:
-
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       -
         name: Login to Docker Hub
@@ -19,11 +20,22 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }} 
+      - 
+        name: Docker Meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: iuriikogan/k8sfilechurner
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=semver,pattern={{version}}
+            type=sha
       -
         name: Build and push
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: iuriikogan/k8sfilechurner
-          cache-from: gha-cache
-          cache-to: gha-cache
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha
