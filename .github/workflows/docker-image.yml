@@ -9,6 +9,9 @@ on:
       - "v*"
   pull_request:
 
+env:
+  IMAGE_NAME: k8sfilechurner    
+
 jobs:
   
   build:
@@ -24,21 +27,11 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }} 
-      - 
-        name: Docker Meta
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          images: iuriikogan/k8sfilechurner
-          tags: |
-            type=sha
-            type=latest
-            ${{ github.run_number }}
       -
         name: Build and push
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha
