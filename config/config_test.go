@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -27,13 +26,13 @@ func TestLoadConfig(t *testing.T) {
 				"APP_SIZE_OF_FILES_MB":       "200",
 				"APP_SIZE_OF_PVC_GB":         "10",
 				"APP_CHURN_PERCENTAGE":       "0.5",
-				"APP_CHURN_INTERVAL_MINUTES": "60m",
+				"APP_CHURN_INTERVAL_MINUTES": "60",
 			},
 			expectedConfig: &Config{
 				SizeOfFileMB:         200,
 				SizeOfPVCGB:          10,
 				ChurnPercentage:      0.5,
-				ChurnIntervalMinutes: time.Duration(60) * time.Minute,
+				ChurnIntervalMinutes: 60,
 			},
 			expectedError: nil,
 		},
@@ -43,13 +42,13 @@ func TestLoadConfig(t *testing.T) {
 				"APP_SIZE_OF_FILES_MB":       "500",
 				"APP_SIZE_OF_PVC_GB":         "5",
 				"APP_CHURN_PERCENTAGE":       "0.2",
-				"APP_CHURN_INTERVAL_MINUTES": "40m",
+				"APP_CHURN_INTERVAL_MINUTES": "40",
 			},
 			expectedConfig: &Config{
 				SizeOfFileMB:         500,
 				SizeOfPVCGB:          5,
 				ChurnPercentage:      0.2,
-				ChurnIntervalMinutes: time.Duration(40) * time.Minute,
+				ChurnIntervalMinutes: 40,
 			},
 			expectedError: nil,
 		},

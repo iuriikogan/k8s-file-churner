@@ -27,17 +27,17 @@ func main() {
 	}
 	//
 	//
-	// typecast ChurnIntervalMinutes to time.Duration
+	// typecast ChurnIntervalMinutes(int64) to time.Duration to print it in minutes
 	//
-	printChurnInterval := time.Duration(cfg.ChurnIntervalMinutes) * time.Minute
+	churnInterval := time.Duration(cfg.ChurnIntervalMinutes) * time.Minute
 	//
-	log.Printf("Churn interval in minutes: %d\n", printChurnInterval)
+	log.Printf("Churn interval in minutes: %v\n", churnInterval)
 	// log stuff
 	log.Println("Starting K8s File Churner...\nAll testfiles will be written to app/testfiles directory")
 	log.Printf("Size of each file in Mb: %d\n", cfg.SizeOfFileMB)
 	log.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
 	log.Printf("Churn percentage: %v\n", (cfg.ChurnPercentage * 100))
-	log.Printf("Churn interval in minutes: %v\n", printChurnInterval)
+	log.Printf("Churn interval in minutes: %v\n", churnInterval)
 	//
 	//
 	// calculate number of files to create
@@ -75,9 +75,9 @@ func main() {
 	// start churning the files
 	//
 	//
-	churnTicker := time.NewTicker(cfg.ChurnIntervalMinutes) // create a ticker to churn files every churnInterval
+	churnTicker := time.NewTicker(churnInterval) // create a ticker to churn files every churnInterval
 	go func() {
-		log.Printf("Churning %v percent of files every %v", (cfg.ChurnPercentage * 100), printChurnInterval)
+		log.Printf("Churning %v percent of files every %v", (cfg.ChurnPercentage * 100), churnInterval)
 
 		for {
 			select {
