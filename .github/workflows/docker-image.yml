@@ -12,18 +12,18 @@ env:
   IMAGE_NAME: k8sfilechurner    
   TAG: 0.1.0
 jobs:
-  # lint: 
-  #   runs-on: ubuntu-latest
-  #   steps: 
-  #   - uses: actions/checkout@v4
-  #   - uses: actions/setup-go@v4
-  #     with:
-  #       go-version: '1.19'
-  #       check-latest: true
-  #   - name: run lint
-  #     run: |
-  #       go get -u golang.org/x/lint/golint
-  #       golint ./...
+  lint: 
+    runs-on: ubuntu-latest
+    steps: 
+    - uses: actions/checkout@v4
+    - uses: actions/setup-go@v4
+      with:
+        go-version: '1.19'
+        check-latest: true
+    - name: run lint
+      run: |
+        go get -u golang.org/x/lint/golint
+        golint ./...
   test: 
     runs-on: ubuntu-latest
     steps:

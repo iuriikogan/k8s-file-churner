@@ -54,7 +54,7 @@ func main() {
 	//
 	var wg sync.WaitGroup
 	wg.Add(numberOfFiles) // increment the wait group counter to numberoffiles to be created
-	c := cron.New()       // create a new cron to log every 1 minute to ensure go routines are still running
+	c := cron.New()       // create a new cron to log every 2 minute to ensure go routines are still running
 	c.AddFunc("createFilesCron", "@every 2m", func() {
 		log.Println("waiting for files to be created")
 	})

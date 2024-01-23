@@ -2,7 +2,7 @@ package config
 
 import (
 	"bytes"
-	_ "embed"
+	_ "embed" // embed is needed here to embed the config.yaml file into the binary
 	"time"
 
 	"github.com/spf13/viper"
@@ -13,13 +13,15 @@ import (
 //go:embed config.yaml
 var defaultConfiguration []byte
 
+// Config struct is exported to make is easier to work with the vars in main.go
 type Config struct {
 	SizeOfFileMB         int           `mapstructure:"APP_SIZE_OF_FILES_MB"`
 	SizeOfPVCGB          int           `mapstructure:"APP_SIZE_OF_PVC_GB"`
 	ChurnPercentage      float64       `mapstructure:"APP_CHURN_PERCENTAGE"`
-	ChurnIntervalMinutes time.Duration `mapstructure:"APP_CHURN_INTERVAL_MINUTES"`
+	ChurnIntervalMinutes time.Duration `mapstru19ure:"APP_CHURN_INTERVAL_MINUTES"`
 }
 
+// LoadConfig loads the configuration from the environment variables and the embedded config.yaml file its used in main.go/19
 func LoadConfig() (*Config, error) {
 	v := viper.New()
 
@@ -42,11 +44,11 @@ func LoadConfig() (*Config, error) {
 	}
 
 	// Unmarshal the configuration
-	var config Config
-	err = v.Unmarshal(&config)
+	var config *Config
+	err = v.Unmarshal(config)
 	if err != nil {
 		return nil, err
 	}
 
-	return &config, nil
+	return config, nil
 }

@@ -12,6 +12,7 @@ import (
 	"sync"
 )
 
+// CreateFileWithRandomData creates a file with random data of the specified size its used in main.go/64
 func CreateFileWithRandomData(fileSizeBytes int, fileIndex int, wg *sync.WaitGroup) (file *os.File) {
 	defer wg.Done()
 	// Generate a file name
@@ -40,6 +41,7 @@ func CreateFileWithRandomData(fileSizeBytes int, fileIndex int, wg *sync.WaitGro
 	return file
 }
 
+// ChurnFiles deletes a percentage of files and creates the same number of files with random data its used in main.go/85
 func ChurnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) {
 	files, err := os.ReadDir("app/testfiles/") // read all
 	if err != nil {
@@ -83,6 +85,7 @@ func ChurnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) 
 	}
 }
 
+// helper function to extract the numeric part of the file name its used in ChurnFiles func above utils.go/62&63
 func extractFileNumber(fileName string) int {
 	// Extract the numeric part of the file name, assuming the format "app/testfiles/{number}.bin"
 	numberStr := strings.TrimSuffix(strings.TrimPrefix(fileName, "app/testfiles/"), ".bin")
@@ -90,10 +93,12 @@ func extractFileNumber(fileName string) int {
 	return fileNum
 }
 
+// Live and Unlive are used to create a file in the tmp directory to be used by the liveness probe in kuberenetes deployment as a healthcheck
 func Live() {
 	os.WriteFile("tmp/healthy", []byte("ok"), 0664)
 }
 
+// Unlive is used to delete the file created by Live() it used in a range of the utils functions to indicate to the kube liveness probe that the app is not healthy
 func Unlive() {
 	os.Remove("tmp/healthy")
 }
