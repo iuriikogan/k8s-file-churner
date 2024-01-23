@@ -18,8 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Create Docker Cache Storage Backend
-        run: docker buildx create --use --driver=docker-container  
+      - name: use Docker Buildx
+        uses: docker/setup-buildx-action@v1  
 
       -
         name: Login to Docker Hub
@@ -32,6 +32,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest,
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha
