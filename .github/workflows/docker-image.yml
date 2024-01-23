@@ -11,7 +11,7 @@ on:
 
 env:
   IMAGE_NAME: k8sfilechurner    
-
+  TAG: 0.1.0
 jobs:
   
   build:
