@@ -19,7 +19,9 @@ bench:
 clean:
 
 	rm -f ./bin/$(BINARY_NAME)
-	./utils/deleteTestFiles.sh
+	./deleteTestFiles.sh
 	./deploy-k8s/destroy.sh
 
-	
+lint: 
+
+	golint ./...
