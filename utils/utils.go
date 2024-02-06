@@ -16,7 +16,7 @@ import (
 func CreateFileWithRandomData(fileSizeBytes int, fileIndex int, wg *sync.WaitGroup) (file *os.File) {
 	defer wg.Done()
 	// Generate a file name
-	fileName := fmt.Sprintf("tmp/testfiles/%d.bin", fileIndex)
+	fileName := fmt.Sprintf("app/testfiles/%d.bin", fileIndex)
 	file, err := os.Create(fileName) // Create the file
 	if err != nil {
 		Unlive()
@@ -43,7 +43,7 @@ func CreateFileWithRandomData(fileSizeBytes int, fileIndex int, wg *sync.WaitGro
 
 // ChurnFiles deletes a percentage of files and creates the same number of files with random data its used in main.go/85
 func ChurnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) {
-	files, err := os.ReadDir("tmp/testfiles/") // read all
+	files, err := os.ReadDir("app/testfiles/") // read all
 	if err != nil {
 		Unlive()
 		log.Fatal(err)
@@ -67,7 +67,7 @@ func ChurnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) 
 	// Delete the first numFilesToDelete files if they start with "test" and are not directories
 	for i := 0; i < numberOfFilesToDelete; i++ {
 		file := files[i]
-		filePath := filepath.Join("tmp/testfiles", file.Name())
+		filePath := filepath.Join("app/testfiles", file.Name())
 		err := os.Remove(filePath)
 		if err != nil {
 			log.Printf("Failed to delete file '%s': %s\n", filePath, err)
@@ -80,22 +80,22 @@ func ChurnFiles(churnPercentage float64, fileSizeBytes int, wg *sync.WaitGroup) 
 
 	// Create the same number of files that were deleted in the sorted order
 	for i := 0; i < numberOfFilesToDelete; i++ {
-		log.Printf("Creating file tmp/testfiles/%d.bin\n", i)
+		log.Printf("Creating file app/testfiles/%d.bin\n", i)
 		go CreateFileWithRandomData(fileSizeBytes, i, wg) //create files calls wg.done each iteration until = num of files to be deleted
 	}
 }
 
 // helper function to extract the numeric part of the file name its used in ChurnFiles func above utils.go/62&63
 func extractFileNumber(fileName string) int {
-	// Extract the numeric part of the file name, assuming the format "tmp/testfiles/{number}.bin"
-	numberStr := strings.TrimSuffix(strings.TrimPrefix(fileName, "tmp/testfiles/"), ".bin")
+	// Extract the numeric part of the file name, assuming the format "app/testfiles/{number}.bin"
+	numberStr := strings.TrimSuffix(strings.TrimPrefix(fileName, "app/testfiles/"), ".bin")
 	fileNum, _ := strconv.Atoi(numberStr)
 	return fileNum
 }
 
 // Live and Unlive are used to create a file in the tmp directory to be used by the liveness probe in kuberenetes deployment as a healthcheck
 func Live() {
-	os.WriteFile("tmp/healthy", []byte("application is healthy"), 0664)
+	os.WriteFile("tmp/healthy", []byte("ok"), 0664)
 }
 
 // Unlive is used to delete the file created by Live() it used in a range of the utils functions to indicate to the kube liveness probe that the app is not healthy

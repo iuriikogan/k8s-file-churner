@@ -1,6 +1,7 @@
 package config
 
 import (
+	_ "embed"
 	"os"
 	"strings"
 	"testing"
@@ -24,16 +25,14 @@ func TestLoadConfig(t *testing.T) {
 			envVars: map[string]string{
 				"APP_SIZE_OF_FILES_MB":       "200",
 				"APP_SIZE_OF_PVC_GB":         "10",
-				"APP_CHURN_PERCENTAGE":       "30",
-				"APP_CHURN_INTERVAL_MINUTES": "2",
-				"APP_CHURN_DURATION_HOURS":   "1",
+				"APP_CHURN_PERCENTAGE":       "0.5",
+				"APP_CHURN_INTERVAL_MINUTES": "60",
 			},
 			expectedConfig: &Config{
 				SizeOfFileMB:         200,
 				SizeOfPVCGB:          10,
-				ChurnPercentage:      30,
-				ChurnIntervalMinutes: 2,
-				ChurnDurationHours:   1,
+				ChurnPercentage:      0.5,
+				ChurnIntervalMinutes: 60,
 			},
 			expectedError: nil,
 		},
@@ -49,9 +48,8 @@ func TestLoadConfig(t *testing.T) {
 			expectedConfig: &Config{
 				SizeOfFileMB:         500,
 				SizeOfPVCGB:          5,
-				ChurnPercentage:      20,
-				ChurnIntervalMinutes: 5,
-				ChurnDurationHours:   2,
+				ChurnPercentage:      0.2,
+				ChurnIntervalMinutes: 40,
 			},
 			expectedError: nil,
 		},

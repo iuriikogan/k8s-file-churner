@@ -1,0 +1,6 @@
+# defaults loaded into viper config
+Config:
+  SizeOfFileMB: 100
+  SizeOfPVCGB: 20
+  ChurnPercentage: 0.2
+  ChurnIntervalMinutes: 30

@@ -13,17 +13,15 @@ import (
 )
 
 func main() {
-
-	// Set the logger
-	// log := slog.Default()
+	// start the timer
 	start := time.Now()
 	// Load the config
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	// Create the tmp/testfiles directory
-	err = os.MkdirAll("tmp/testfiles", 0755)
+	// Create the app/testfiles directory
+	err = os.MkdirAll("app/testfiles", 0755)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -31,6 +29,7 @@ func main() {
 	//
 	// typecast ChurnIntervalMinutes(int64) to time.Duration to print it in minutes
 	//
+<<<<<<< HEAD
 	var churnInterval = time.Duration(cfg.ChurnIntervalMinutes)
 	log.Printf("Churn interval in minutes: %v\n", churnInterval)
 	// log stuff
@@ -38,6 +37,16 @@ func main() {
 	log.Printf("Size of each file in Mb: %v\n", cfg.SizeOfFileMB)
 	log.Printf("Size of PVC in Gb: %v\n", cfg.SizeOfPVCGB)
 	log.Printf("Churn percentage: %v\n", (cfg.ChurnPercentage))
+=======
+	churnInterval := time.Duration(cfg.ChurnIntervalMinutes) * time.Minute
+	//
+	log.Printf("Churn interval in minutes: %v\n", churnInterval)
+	// log stuff
+	log.Println("Starting K8s File Churner...\nAll testfiles will be written to app/testfiles directory")
+	log.Printf("Size of each file in Mb: %d\n", cfg.SizeOfFileMB)
+	log.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
+	log.Printf("Churn percentage: %v\n", (cfg.ChurnPercentage * 100))
+>>>>>>> parent of 2305d96 (something broken)
 	log.Printf("Churn interval in minutes: %v\n", churnInterval)
 	//
 	//
@@ -61,7 +70,6 @@ func main() {
 	})
 	c.Start()
 	// Launch a goroutine for each file creation
-
 	for i := 0; i < numberOfFiles; i++ {
 		go utils.CreateFileWithRandomData(fileSizeBytes, i, &wg)
 	}
@@ -70,27 +78,43 @@ func main() {
 	c.Stop() // stop the log cron
 	// once all files are created, set the live probe
 	utils.Live()
-	// log the time it took to create the files
+	// log the number of files created, their size and the time it took
 	log.Printf("Created %v files of size %vMb\nTook %s\n", numberOfFiles, cfg.SizeOfFileMB, time.Since(start))
-
-	// Start churning the files
-	churnTicker := time.NewTicker(churnInterval)
-
+	//
+	//
+	// start churning the files
+	//
+	//
+	churnTicker := time.NewTicker(churnInterval) // create a ticker to churn files every churnInterval
 	go func() {
+<<<<<<< HEAD
 		log.Printf("Churning %v percent of files every %v for %v", (cfg.ChurnPercentage * 100), churnInterval, cfg.ChurnDurationHours)
 		startChurn := time.Now()
 		done := make(chan bool)
+=======
+		log.Printf("Churning %v percent of files every %v", (cfg.ChurnPercentage * 100), churnInterval)
+
+>>>>>>> parent of 2305d96 (something broken)
 		for {
 			select {
-			case <-churnTicker.C:
+			case <-churnTicker.C: // churn every churnInterval
 				utils.ChurnFiles(cfg.ChurnPercentage, fileSizeBytes, &wg)
-			case <-time.After(120 * time.Second):
+			case <-time.After(120 * time.Second): // log every 120 seconds
 				log.Println("Waiting to churn files")
+<<<<<<< HEAD
 			case <-time.After(cfg.ChurnDurationHours * time.Hour): // Stop churning after churnDurationHours
 				defer churnTicker.Stop()
 				done <- true
 				log.Printf("Churned %v percent of files every %v for %v\nTook %s", (cfg.ChurnPercentage * 100), churnInterval, cfg.ChurnDurationHours, time.Since(startChurn))
+=======
+>>>>>>> parent of 2305d96 (something broken)
 			}
 		}
 	}()
+	//
+	//
+	// (this is a hack to keep the program running until interrupted)
+	//
+	//
+	<-make(chan struct{})
 }
