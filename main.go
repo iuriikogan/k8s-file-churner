@@ -31,15 +31,14 @@ func main() {
 	//
 	// typecast ChurnIntervalMinutes(int64) to time.Duration to print it in minutes
 	//
-	var churnInterval = time.Duration(cfg.ChurnIntervalMinutes) * time.Minute
-	//
+	var churnInterval = time.Duration(cfg.ChurnIntervalMinutes)
 	log.Printf("Churn interval in minutes: %v\n", churnInterval)
 	// log stuff
 	log.Println("Starting K8s File Churner...\nAll testfiles will be written to tmp/testfiles directory")
-	log.Printf("Size of each file in Mb: %d\n", cfg.SizeOfFileMB)
-	log.Printf("Size of PVC in Gb: %d\n", cfg.SizeOfPVCGB)
-	log.Printf("Churn percentage: %v\n", (cfg.ChurnPercentage * 100))
-	log.Printf("Churn interval in minutes: %d\n", (churnInterval * time.Minute))
+	log.Printf("Size of each file in Mb: %v\n", cfg.SizeOfFileMB)
+	log.Printf("Size of PVC in Gb: %v\n", cfg.SizeOfPVCGB)
+	log.Printf("Churn percentage: %v\n", (cfg.ChurnPercentage))
+	log.Printf("Churn interval in minutes: %v\n", churnInterval)
 	//
 	//
 	// calculate number of files to create
@@ -80,7 +79,7 @@ func main() {
 	go func() {
 		log.Printf("Churning %v percent of files every %v for %v", (cfg.ChurnPercentage * 100), churnInterval, cfg.ChurnDurationHours)
 		startChurn := time.Now()
-
+		done := make(chan bool)
 		for {
 			select {
 			case <-churnTicker.C:
@@ -88,9 +87,9 @@ func main() {
 			case <-time.After(120 * time.Second):
 				log.Println("Waiting to churn files")
 			case <-time.After(cfg.ChurnDurationHours * time.Hour): // Stop churning after churnDurationHours
-				churnTicker.Stop()
-				log.Printf("Churned files for %v", time.Since(startChurn))
-				return // Exit the goroutine
+				defer churnTicker.Stop()
+				done <- true
+				log.Printf("Churned %v percent of files every %v for %v\nTook %s", (cfg.ChurnPercentage * 100), churnInterval, cfg.ChurnDurationHours, time.Since(startChurn))
 			}
 		}
 	}()
